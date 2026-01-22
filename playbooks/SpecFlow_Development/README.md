@@ -115,37 +115,45 @@ This decomposes the requirements into features in the queue.
 | `LOOP_{{N}}_PROGRESS.md` | Implementation progress per loop | Yes |
 | `LOOP_{{N}}_TEST_RESULTS.md` | Test execution results | Updated each loop |
 
-## SpecFlow Commands Used
+## The SpecFlow Skill
 
-### SpecFlow CLI
+This playbook uses the **SpecFlow Skill** from [jcfischer/specflow-bundle](https://github.com/jcfischer/specflow-bundle).
 
-| Command | Purpose | Output |
-|---------|---------|--------|
-| `specflow init <project>` | Initialize a new project | `.specflow/` directory |
-| `specflow add "<feature>"` | Add a feature to the queue | Feature ID (F-N) |
-| `specflow status` | Check progress and feature queue | Status report |
-| `specflow specify F-N` | Create detailed specification | `spec.md` |
-| `specflow plan F-N` | Create implementation plan | `plan.md` |
-| `specflow tasks F-N` | Generate task breakdown | `tasks.md` |
-| `specflow implement F-N` | Execute with TDD enforcement | Working code |
-| `specflow complete F-N` | Mark feature complete | Status update |
-| `specflow eval run` | Run quality evaluations | Quality scores |
-| `specflow ui` | Launch progress dashboard | http://localhost:3000 |
+### Skill Auto-Load Triggers
 
-### pai-deps CLI (Dependency Tracking)
+The SpecFlow Skill **auto-loads** when:
+- Project has `.specify/` or `.specflow/` directory
+- User mentions "F-1", "F-2", "F-XXX" pattern
+- User says "spec", "specify", "specflow", "new feature"
 
-| Command | Purpose |
-|---------|---------|
-| `pai-deps health` | Show ecosystem health |
-| `pai-deps verify` | Verify all contracts |
-| `pai-deps blast-radius <tool>` | Impact analysis |
-| `pai-deps deps <tool>` | Show dependencies |
+### Skill Workflows
 
-### Quality Gates
+| Workflow | Purpose |
+|----------|---------|
+| `sdd-workflow.md` | Complete Spec-Driven Development process |
+| `specify-with-interview.md` | 8-phase interview protocol for requirements |
 
-- **Spec Quality** - Validates specification completeness
-- **Plan Quality** - Validates technical design
-- **Threshold**: >= 80% required to proceed to next phase
+### Key Capabilities
+
+| Capability | Description |
+|------------|-------------|
+| **Gated Phases** | Cannot advance until current phase validates (≥80%) |
+| **Interview-Driven Specs** | 8-phase structured requirements elicitation |
+| **Quality Evals** | `spec-quality` and `plan-quality` rubrics |
+| **TDD Enforcement** | RED → GREEN → BLUE for every task |
+| **Doctorow Gate** | Post-implementation verification |
+| **Constitutional Compliance** | CLI-first, library-first, test-first, deterministic |
+
+### Anti-Patterns (from SKILL.md)
+
+The skill documents these failure modes to avoid:
+1. **Init and Abandon** - Running `specflow init` without following through
+2. **Quick Questions Instead of Interview** - Skipping the 8-phase interview
+3. **Time Pressure Rationalization** - Silently skipping specs under deadline pressure
+4. **TodoWrite for Code, Not Process** - Tracking implementation without spec phases
+5. **Test File as TDD** - One test file ≠ TDD for every task
+
+**Full skill documentation**: [SpecFlow SKILL.md](https://github.com/jcfischer/specflow-bundle/blob/main/packages/specflow/SKILL.md)
 
 ## Loop Behavior
 
