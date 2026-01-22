@@ -137,6 +137,53 @@ The SpecFirst skill handles all project types:
 - Libraries
 - Any codebase
 
+## Advanced: Parallel Development with Git Worktrees
+
+For teams or power users running multiple agents concurrently, use **git worktrees** to enable safe parallel execution.
+
+### Setup
+
+```bash
+# Create worktrees for parallel agents
+git worktree add ../project-agent-1 -b feature/agent-1
+git worktree add ../project-agent-2 -b feature/agent-2
+
+# Each agent works in its own directory
+# Agent 1 → ~/src/worktrees/project/agent-1
+# Agent 2 → ~/src/worktrees/project/agent-2
+```
+
+### Workflow
+
+1. **Launch Maestro** with agents assigned to separate worktree directories
+2. **Load playbook** and provide requirements to each agent
+3. **AutoRun** - agents work concurrently and safely (isolated directories)
+4. **Compare outputs** - use a "Best PR" playbook to compare agent results
+5. **Merge** the winning approach, incorporate gems from runner-up
+
+### Benefits
+
+- **Safe parallelism** - No conflicts between agents
+- **Faster iteration** - Multiple approaches explored simultaneously
+- **Quality through competition** - Compare agent outputs for best solution
+
+### Model Mix (from Kayvan's workflow)
+
+| Model | Usage |
+|-------|-------|
+| Claude Opus 4.5 | 80% - Primary development |
+| Codex 5.2 | 15% - Code generation |
+| Experimental | 5% - Testing new models |
+
+> "I am literally like a small programming team by myself." - Kayvan
+
+### Resources
+
+- [ksylvan/maestro-playbooks-custom](https://github.com/ksylvan/maestro-playbooks-custom) - Custom playbooks including "Fabric Issue Solver"
+- [ksylvan/LaunchMaestroDev](https://github.com/ksylvan/LaunchMaestroDev) - Development launcher
+
+---
+
 ## Support
 
 - [PAI](https://github.com/danielmiessler/PAI) - Personal AI Infrastructure
