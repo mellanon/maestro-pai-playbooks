@@ -90,13 +90,35 @@ The playbook is **generic** - works for any project:
 
 Each step invokes SpecFlow Bundle commands:
 
-| Phase | Command | What It Does |
-|-------|---------|--------------|
-| SPECIFY | `specflow specify <feature>` | Creates detailed specification |
-| PLAN | `specflow plan <feature>` | Creates technical architecture |
-| TASKS | `specflow tasks <feature>` | Breaks into implementation units |
-| IMPLEMENT | `specflow implement` | TDD execution with verification |
-| COMPLETE | `specflow complete <feature>` | Validates and marks done |
+### SpecFlow CLI
+
+| Command | What It Does |
+|---------|--------------|
+| `specflow init <project>` | Initialize a new project |
+| `specflow add "<feature>"` | Add a feature to the queue |
+| `specflow status` | Check progress and feature queue |
+| `specflow specify F-N` | Create specification (`spec.md`) |
+| `specflow plan F-N` | Create implementation plan (`plan.md`) |
+| `specflow tasks F-N` | Generate task breakdown (`tasks.md`) |
+| `specflow implement F-N` | Execute with TDD enforcement |
+| `specflow complete F-N` | Mark feature complete |
+| `specflow eval run` | Run quality evaluations |
+| `specflow ui` | Launch progress dashboard |
+
+### pai-deps CLI (Dependency Tracking)
+
+| Command | What It Does |
+|---------|--------------|
+| `pai-deps health` | Show ecosystem health |
+| `pai-deps verify` | Verify all contracts |
+| `pai-deps blast-radius <tool>` | Impact analysis |
+| `pai-deps deps <tool>` | Show dependencies |
+
+### Quality Gates
+
+- **Spec Quality** - Validates specification completeness
+- **Plan Quality** - Validates technical design
+- **Threshold**: >= 80% required to proceed
 
 ## Dependencies
 

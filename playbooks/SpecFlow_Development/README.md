@@ -117,18 +117,35 @@ This decomposes the requirements into features in the queue.
 
 ## SpecFlow Commands Used
 
-| Phase | Command | Purpose |
-|-------|---------|---------|
-| INIT | `specflow init [description]` | Initialize project with feature decomposition |
-| ADD | `specflow add <name> <description>` | Add a feature to the queue |
-| STATUS | `specflow status` | Show feature queue and progress |
-| SPECIFY | `specflow specify <feature-id>` | Create detailed specification |
-| PLAN | `specflow plan <feature-id>` | Create technical architecture plan |
-| TASKS | `specflow tasks <feature-id>` | Break into implementation tasks |
-| IMPLEMENT | `specflow implement` | Generate implementation prompt |
-| VALIDATE | `specflow validate <feature-id>` | Validate all phases complete |
-| COMPLETE | `specflow complete <feature-id>` | Mark feature as complete |
-| UI | `specflow ui` | Start web dashboard |
+### SpecFlow CLI
+
+| Command | Purpose | Output |
+|---------|---------|--------|
+| `specflow init <project>` | Initialize a new project | `.specflow/` directory |
+| `specflow add "<feature>"` | Add a feature to the queue | Feature ID (F-N) |
+| `specflow status` | Check progress and feature queue | Status report |
+| `specflow specify F-N` | Create detailed specification | `spec.md` |
+| `specflow plan F-N` | Create implementation plan | `plan.md` |
+| `specflow tasks F-N` | Generate task breakdown | `tasks.md` |
+| `specflow implement F-N` | Execute with TDD enforcement | Working code |
+| `specflow complete F-N` | Mark feature complete | Status update |
+| `specflow eval run` | Run quality evaluations | Quality scores |
+| `specflow ui` | Launch progress dashboard | http://localhost:3000 |
+
+### pai-deps CLI (Dependency Tracking)
+
+| Command | Purpose |
+|---------|---------|
+| `pai-deps health` | Show ecosystem health |
+| `pai-deps verify` | Verify all contracts |
+| `pai-deps blast-radius <tool>` | Impact analysis |
+| `pai-deps deps <tool>` | Show dependencies |
+
+### Quality Gates
+
+- **Spec Quality** - Validates specification completeness
+- **Plan Quality** - Validates technical design
+- **Threshold**: >= 80% required to proceed to next phase
 
 ## Loop Behavior
 
