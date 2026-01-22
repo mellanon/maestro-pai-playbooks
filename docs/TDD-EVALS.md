@@ -135,15 +135,73 @@ Probability that **all k** trials succeed.
 
 ---
 
-## Eval-Driven Development
+## Zero to One: Roadmap to Great Evals
 
-### The Process
+Anthropic's 8-step process for building evaluations from scratch.
 
-1. **Identify gaps** - Run Claude without the feature, document failures
-2. **Create evaluations** - Build 3+ test scenarios
-3. **Establish baseline** - Measure performance without feature
-4. **Write minimal implementation** - Just enough to pass evaluations
-5. **Iterate** - Test, compare, refine
+### Step 0: Start Early
+
+Don't wait for hundreds of tasks. **20-50 simple tasks** drawn from real failures is a great start. Early on, each change has large effect size, so small sample sizes suffice.
+
+### Step 1: Start with What You Test Manually
+
+Begin with:
+- Manual checks you run during development
+- Common tasks end users try
+- Bug tracker and support queue (user-reported failures)
+
+### Step 2: Write Unambiguous Tasks with Reference Solutions
+
+A good task is one where **two domain experts would independently reach the same pass/fail verdict**.
+
+Each task should include:
+- Clear success criteria
+- Reference solution (known-working output that passes all graders)
+- Everything the grader checks should be clear from the task description
+
+**A 0% pass rate across many trials usually signals a broken task, not an incapable agent.**
+
+### Step 3: Build Balanced Problem Sets
+
+Test both:
+- Cases where behavior **should** occur
+- Cases where behavior **shouldn't** occur
+
+One-sided evals create one-sided optimization.
+
+### Step 4: Build Robust Eval Harness with Stable Environment
+
+- Each trial should be **isolated** (start from clean environment)
+- No shared state between runs (leftover files, cached data)
+- Environment shouldn't introduce noise
+- Agent in eval should function same as in production
+
+### Step 5: Design Graders Thoughtfully
+
+- Choose deterministic graders where possible
+- Use LLM graders where necessary
+- Use human graders judiciously for validation
+- **Grade outcomes, not paths** - don't require specific tool call sequences
+- **Build in partial credit** for tasks with multiple components
+- **Make graders cheat-resistant** - passing should require actually solving the problem
+
+### Step 6: Check the Transcripts
+
+**Read the transcripts and grades from many trials.** When a task fails, the transcript tells you whether:
+- Agent made a genuine mistake, OR
+- Graders rejected a valid solution
+
+Failures should seem fair - it's clear what the agent got wrong and why.
+
+### Step 7: Monitor for Eval Saturation
+
+An eval at 100% tracks regressions but provides no signal for improvement. As evals approach saturation, only the most difficult tasks remain. Large capability improvements appear as small score increases.
+
+### Step 8: Keep Eval Suites Healthy Long-Term
+
+- Establish dedicated ownership
+- Domain experts contribute tasks
+- Practicing **eval-driven development**: build evals to define planned capabilities before agents can fulfill them
 
 ### When to Build Evals
 
@@ -213,6 +271,39 @@ Before marking implementation complete:
 - [ ] **Regression tests** still pass
 - [ ] **Transcripts reviewed** - failures seem fair
 - [ ] **Multiple trials run** - results are consistent
+
+---
+
+## How Evals Fit with Other Methods
+
+Automated evals are one of many ways to understand agent performance. A complete picture includes:
+
+| Method | When to Use | Pros | Cons |
+|--------|-------------|------|------|
+| **Automated evals** | Pre-launch, CI/CD | Fast, reproducible, no user impact | Requires upfront investment |
+| **Production monitoring** | Post-launch | Reveals real user behavior | Reactive, problems reach users first |
+| **A/B testing** | With sufficient traffic | Measures actual user outcomes | Slow, days/weeks for significance |
+| **User feedback** | Ongoing | Surfaces unanticipated problems | Sparse, skews toward severe issues |
+| **Transcript review** | Ongoing | Builds intuition for failure modes | Time-intensive, doesn't scale |
+| **Human studies** | Calibrating LLM graders | Gold-standard quality judgments | Expensive and slow |
+
+**Swiss Cheese Model**: No single layer catches every issue. Multiple methods combined catch what others miss.
+
+---
+
+## Eval Frameworks
+
+Several frameworks can help without building infrastructure from scratch:
+
+| Framework | Focus | Best For |
+|-----------|-------|----------|
+| [Harbor](https://harborframework.com/) | Containerized environments | Running agents at scale, benchmarks |
+| [Promptfoo](https://www.promptfoo.dev/) | YAML configuration | Declarative prompt testing |
+| [Braintrust](https://www.braintrust.dev/) | Offline + production | Teams needing both dev iteration and monitoring |
+| [LangSmith](https://docs.langchain.com/langsmith/evaluation) | LangChain integration | Tracing, datasets, evaluations |
+| [Langfuse](https://langfuse.com/) | Self-hosted | Data residency requirements |
+
+**Frameworks are only as good as the tasks you run through them.** Invest energy in high-quality test cases and graders.
 
 ---
 
