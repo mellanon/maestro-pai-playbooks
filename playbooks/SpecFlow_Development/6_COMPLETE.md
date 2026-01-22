@@ -122,6 +122,27 @@ git push -u origin <branch>
 gh pr create --title "[title]" --body "..."
 ```
 
+## Optional: Self-Review with PR_Review Playbook
+
+After creating the PR, optionally run the **PR_Review** playbook for self-review:
+
+```
+playbooks/PR_Review/
+├── 1_ANALYZE_PR.md      → Understand PR scope
+├── 2_CODE_QUALITY.md    → Code standards review
+├── 3_SECURITY_REVIEW.md → Security analysis
+├── 4_TEST_VALIDATION.md → Test execution
+├── 5_DOCUMENTATION.md   → Doc completeness
+└── 6_SUMMARIZE.md       → Generate PR comment
+```
+
+This provides a comprehensive pre-merge review validating against:
+- `docs/TDD-EVALS.md` - Test quality
+- `docs/RELEASE-FRAMEWORK.md` - Release checklist
+
 ## Playbook Complete
 
-Feature development cycle finished. Return to Step 1 for next feature or end session.
+Feature development cycle finished. Options:
+1. Return to Step 1 for next feature
+2. Run PR_Review playbook for self-review
+3. End session

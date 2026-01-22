@@ -229,11 +229,32 @@ git worktree add ../project-agent-2 -b feature/agent-2
 
 ---
 
-## Resources
+## Attribution
 
-- [SpecFlow Bundle](https://github.com/jcfischer/specflow-bundle) - Complete spec-driven development system
-- [PAI](https://github.com/danielmiessler/PAI) - Personal AI Infrastructure
-- [Maestro](https://runmaestro.ai/) - Multi-agent orchestration
+This playbook is built on open source contributions from:
+
+### SpecFlow Bundle
+
+The core spec-driven development tooling by [J.C. Fischer](https://github.com/jcfischer):
+- [jcfischer/specflow-bundle](https://github.com/jcfischer/specflow-bundle) - Complete spec-driven development system
+
+### Maestro Playbooks
+
+The playbook design patterns and parallel development workflow from [Kayvan Sylvan](https://github.com/ksylvan):
+
+| Resource | URL |
+|----------|-----|
+| **Maestro** | https://runmaestro.ai/ |
+| **Kayvan's Maestro fork** | [ksylvan/Maestro](https://github.com/ksylvan/Maestro) (preview branch) |
+| **LaunchMaestroDev** | [ksylvan/LaunchMaestroDev](https://github.com/ksylvan/LaunchMaestroDev) |
+| **Custom playbooks** | [ksylvan/maestro-playbooks-custom](https://github.com/ksylvan/maestro-playbooks-custom) |
+
+### PAI (Personal AI Infrastructure)
+
+Constitutional gates and founding principles from:
+- [danielmiessler/PAI](https://github.com/danielmiessler/PAI) - Personal AI Infrastructure
+
+---
 
 ## Philosophy
 
