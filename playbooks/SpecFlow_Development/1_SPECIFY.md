@@ -24,11 +24,20 @@ Create a detailed specification for the feature through interview-driven require
   specflow status
   ```
 
-- [ ] **If not initialized**, run:
+- [ ] **If not initialized**, load from requirements spec:
+  ```bash
+  specflow init --from-spec docs/[Your-Requirements].md
+  ```
+
+  Or describe the project:
   ```bash
   specflow init "Description of the application or project"
   ```
-  This decomposes the high-level description into features.
+
+  This decomposes the requirements into features in the queue.
+
+- [ ] **Read constitutional gates** for this phase:
+  - `docs/PAI-PRINCIPLES.md` - Design must follow founding principles
 
 ### 2. Check Current Status
 

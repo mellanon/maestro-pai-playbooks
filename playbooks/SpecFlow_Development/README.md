@@ -68,8 +68,27 @@ Orchestrates the SpecFlow methodology for ANY software project. Takes a requirem
   git clone --recursive https://github.com/jcfischer/specflow-bundle.git
   cd specflow-bundle && bun run install.ts
   ```
-- Project initialized with `specflow init`
 - **Recommended**: Feature branch (not `main`)
+
+## Input: Requirements Specification
+
+The playbook takes a **requirements specification** as input. Place your spec in `docs/`:
+
+```
+docs/
+├── [Your-Requirements].md    ← INPUT: What to build
+├── PAI-PRINCIPLES.md         ← GATE: Design validation
+├── TDD-EVALS.md              ← GATE: Test quality criteria
+├── SKILL-BEST-PRACTICES.md   ← GATE: Structure validation
+└── RELEASE-FRAMEWORK.md      ← GATE: Release checklist
+```
+
+**Initialize from spec:**
+```bash
+specflow init --from-spec docs/Your-Requirements.md
+```
+
+This decomposes the requirements into features in the queue.
 
 ## Setup in Maestro
 
@@ -132,16 +151,21 @@ Each loop iteration:
 - **Validation Failure**: `specflow validate` fails → stops for review
 - **Blocked**: Task has unsatisfied dependencies → waits or halts
 
-## Foundation Documents
+## Constitutional Gates (Reference Documents)
 
-This playbook validates work against these principles:
+These documents act as **validation gates** - each step must pass validation against the relevant principles before proceeding.
 
-| Document | Purpose | Used In |
-|----------|---------|---------|
-| `docs/PAI-PRINCIPLES.md` | Founding design principles | Steps 1-3 (spec, plan, tasks) |
-| `docs/SKILL-BEST-PRACTICES.md` | Skill structure guidelines | Step 2 (plan) |
-| `docs/TDD-EVALS.md` | Test patterns and eval criteria | Steps 4-5 (implement, verify) |
-| `docs/RELEASE-FRAMEWORK.md` | Release discipline | Step 6 (complete) |
+| Document | Purpose | Validates | Key Checks |
+|----------|---------|-----------|------------|
+| `docs/PAI-PRINCIPLES.md` | Founding design principles | Steps 1-3 | CLI-first, deterministic, UNIX philosophy |
+| `docs/SKILL-BEST-PRACTICES.md` | Skill structure guidelines | Step 2 | Under 500 lines, USE WHEN triggers |
+| `docs/TDD-EVALS.md` | Test patterns and eval criteria | Steps 4-5 | Deterministic tests, pass@k metrics |
+| `docs/RELEASE-FRAMEWORK.md` | Release discipline | Step 6 | File inventory, sanitization, no secrets |
+
+**How gates work:**
+- Each playbook step includes a validation checklist
+- AI agent checks work against the relevant gate document
+- Human reviews gate compliance before approving phase
 
 ## Customization
 
