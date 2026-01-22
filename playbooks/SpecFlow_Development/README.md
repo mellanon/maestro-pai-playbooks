@@ -1,56 +1,74 @@
-# SpecFirst Development Playbook
+# SpecFlow Development Playbook
 
-**A Maestro Auto Run playbook for spec-driven development using the SpecFirst skill.**
+**A Maestro Auto Run playbook for spec-driven development using SpecFlow Bundle.**
 
 ## What This Playbook Does
 
-Orchestrates the SpecFirst methodology for ANY software project. Takes a requirement, creates specifications, implements with TDD, and prepares for release.
+Orchestrates the SpecFlow methodology for ANY software project. Takes a requirement, decomposes into features, and implements with TDD through four sequential phases with human approval gates.
 
 ### Key Features
 
 - **Spec-Driven**: Requirements become specifications before code
-- **TDD Enforced**: Tests written before implementation
-- **Quality Gates**: Progress validated at each phase
-- **Loop Control**: Document 3 drives the implementation loop
-- **Human Gates**: Spec approval and release approval require human sign-off
+- **Feature-Centric**: Work organized around discrete features with SQLite tracking
+- **Four-Phase Workflow**: SPECIFY → PLAN → TASKS → IMPLEMENT
+- **Quality Gates**: Each phase requires human approval before advancing
+- **Progress Dashboard**: Web UI for tracking all features
+- **Human Gates**: No code written until spec, plan, and tasks are approved
 
-## Playbook Structure
-
-This playbook uses a **hybrid pattern** with a fixed specification phase and iterative implementation:
+## The Four-Phase Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  SPECIFICATION PHASE (runs once, persists via files)        │
+│  PHASE 1: SPECIFY                                           │
 ├─────────────────────────────────────────────────────────────┤
-│  1_SPECIFY.md        → Create change proposal with specs    │
-│                        → Invokes /openspec-proposal         │
+│  1_SPECIFY.md        → Interview-driven requirements         │
+│                        → specflow specify <feature>          │
+│                        → Human approves spec                 │
 └─────────────────────────────────────────────────────────────┘
                         ↓ [Human Review]
 ┌─────────────────────────────────────────────────────────────┐
-│  IMPLEMENTATION LOOP (repeats until all tasks complete)     │
+│  PHASE 2: PLAN                                              │
 ├─────────────────────────────────────────────────────────────┤
-│  2_IMPLEMENT.md      → Execute one task with TDD            │
-│                        → Invokes /openspec-apply            │
-│  3_VERIFY.md         → Test & check progress (LOOP GATE)    │
+│  2_PLAN.md           → Architecture, data models, failure   │
+│                        → specflow plan <feature>             │
+│                        → Human approves design               │
+└─────────────────────────────────────────────────────────────┘
+                        ↓ [Human Review]
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 3: TASKS                                             │
+├─────────────────────────────────────────────────────────────┤
+│  3_TASKS.md          → Break into reviewable units          │
+│                        → specflow tasks <feature>            │
+│                        → Human approves breakdown            │
+└─────────────────────────────────────────────────────────────┘
+                        ↓ [Human Review]
+┌─────────────────────────────────────────────────────────────┐
+│  PHASE 4: IMPLEMENT (Loop)                                  │
+├─────────────────────────────────────────────────────────────┤
+│  4_IMPLEMENT.md      → TDD execution with verification      │
+│                        → specflow implement                  │
+│  5_VERIFY.md         → Test & check progress (LOOP GATE)    │
 │         ↑                       │                           │
 │         └── more tasks ─────────┘                           │
 └─────────────────────────────────────────────────────────────┘
                         ↓ (all tasks complete)
 ┌─────────────────────────────────────────────────────────────┐
-│  FINALIZATION PHASE (runs once)                             │
+│  COMPLETE                                                   │
 ├─────────────────────────────────────────────────────────────┤
-│  4_ARCHIVE.md        → Merge specs, update CHANGELOG        │
-│                        → Invokes /openspec-archive          │
-│  5_RELEASE.md        → File inventory, prepare PR           │
-│                        → Invokes /specfirst-release         │
+│  6_COMPLETE.md       → Validation and marking complete      │
+│                        → specflow complete <feature>         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Prerequisites
 
 - Maestro installed and configured
-- PAI installation with SpecFirst skill available
-- Project initialized with `specfirst init`
+- **SpecFlow Bundle** installed:
+  ```bash
+  git clone --recursive https://github.com/jcfischer/specflow-bundle.git
+  cd specflow-bundle && bun run install.ts
+  ```
+- Project initialized with `specflow init`
 - **Recommended**: Feature branch (not `main`)
 
 ## Setup in Maestro
@@ -71,44 +89,47 @@ This playbook uses a **hybrid pattern** with a fixed specification phase and ite
 
 | File | Purpose | Persists Across Loops |
 |------|---------|----------------------|
-| `openspec/changes/[name]/proposal.md` | Change summary and rationale | Yes |
-| `openspec/changes/[name]/specs/*.md` | Requirements (SHALL/MUST) | Yes |
-| `openspec/changes/[name]/tasks.md` | Task breakdown with status | Yes (updated) |
-| `LOOP_{{N}}_REQUIREMENTS.md` | Initial requirements capture | Yes |
+| `.specflow/specflow.db` | SQLite database tracking all features | Yes |
+| `specflow/[feature]/spec.md` | Detailed specification | Yes |
+| `specflow/[feature]/plan.md` | Technical architecture plan | Yes |
+| `specflow/[feature]/tasks.md` | Implementation task breakdown | Yes (updated) |
 | `LOOP_{{N}}_PROGRESS.md` | Implementation progress per loop | Yes |
 | `LOOP_{{N}}_TEST_RESULTS.md` | Test execution results | Updated each loop |
-| `RELEASE_INVENTORY.md` | Files for release | Final |
-| `PR_DESCRIPTION.md` | Ready-to-use PR description | Final |
 
-## SpecFirst Commands Used
+## SpecFlow Commands Used
 
-| Step | Command | Purpose |
-|------|---------|---------|
-| SPECIFY | `/openspec-proposal` | Creates specs folder with requirements |
-| IMPLEMENT | `/openspec-apply` | Implements one task with TDD |
-| VERIFY | `specfirst gate` | Checks quality thresholds |
-| ARCHIVE | `/openspec-archive` | Merges specs, updates CHANGELOG |
-| RELEASE | `/specfirst-release` | Creates file inventory, prepares PR |
+| Phase | Command | Purpose |
+|-------|---------|---------|
+| INIT | `specflow init [description]` | Initialize project with feature decomposition |
+| ADD | `specflow add <name> <description>` | Add a feature to the queue |
+| STATUS | `specflow status` | Show feature queue and progress |
+| SPECIFY | `specflow specify <feature-id>` | Create detailed specification |
+| PLAN | `specflow plan <feature-id>` | Create technical architecture plan |
+| TASKS | `specflow tasks <feature-id>` | Break into implementation tasks |
+| IMPLEMENT | `specflow implement` | Generate implementation prompt |
+| VALIDATE | `specflow validate <feature-id>` | Validate all phases complete |
+| COMPLETE | `specflow complete <feature-id>` | Mark feature as complete |
+| UI | `specflow ui` | Start web dashboard |
 
 ## Loop Behavior
 
-The playbook loops through documents 2-3 until:
-- All tasks in `tasks.md` are marked `COMPLETE`
+The playbook loops through the IMPLEMENT phase until:
+- All tasks in `tasks.md` are marked complete
 - Or max loops reached
 - Or a task fails repeatedly
 
 Each loop iteration:
-1. Finds the next `PENDING` task with satisfied dependencies
+1. Runs `specflow implement` to get next implementation context
 2. Writes tests (RED)
 3. Implements code (GREEN)
 4. Runs all tests
-5. Updates task status to `COMPLETE` or keeps `PENDING`
+5. Updates task status
 
 ## Exit Conditions
 
-- **Success**: All tasks complete, tests pass → proceeds to Document 4
+- **Success**: All tasks complete, tests pass → runs `specflow complete <feature>`
 - **Max Loops**: Reached loop limit → exits with partial progress
-- **Gate Failure**: Quality gate < 80% → stops for review
+- **Validation Failure**: `specflow validate` fails → stops for review
 - **Blocked**: Task has unsatisfied dependencies → waits or halts
 
 ## Foundation Documents
@@ -184,7 +205,18 @@ git worktree add ../project-agent-2 -b feature/agent-2
 
 ---
 
-## Support
+## Resources
 
+- [SpecFlow Bundle](https://github.com/jcfischer/specflow-bundle) - Complete spec-driven development system
 - [PAI](https://github.com/danielmiessler/PAI) - Personal AI Infrastructure
 - [Maestro](https://runmaestro.ai/) - Multi-agent orchestration
+
+## Philosophy
+
+> **"The AI is the same. The architecture around it isn't."**
+
+The breakthrough isn't a better model — it's better scaffolding. When you give AI agents structure, constraints, and verification gates, they stop hallucinating and start engineering.
+
+> **"Code is a liability, not an asset."** — [Cory Doctorow](https://pluralistic.net/2026/01/06/1000x-liability/)
+
+Every line requires maintenance. Every feature adds complexity. SpecFlow embraces this truth by forcing engineering discipline before code generation.
