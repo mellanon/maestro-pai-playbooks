@@ -216,6 +216,187 @@ Before marking implementation complete:
 
 ---
 
+## Real Test Pattern Examples
+
+The following patterns are extracted from PAI's production test suite.
+
+### Unit Test: Date Parsing with Mocked Time
+
+Deterministic tests require controlled time. Mock `Date.now()` for predictable results.
+
+```typescript
+import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import { parseSince } from "../lib/search";
+
+describe("parseSince", () => {
+  // Use a fixed "now" for predictable tests
+  let originalDate: typeof Date;
+  const MOCK_NOW = new Date("2025-12-08T12:00:00.000Z");
+
+  beforeEach(() => {
+    // Mock Date.now() for predictable tests
+    originalDate = global.Date;
+    const MockDate = class extends Date {
+      constructor(...args: any[]) {
+        if (args.length === 0) {
+          super(MOCK_NOW.getTime());
+        } else {
+          // @ts-ignore
+          super(...args);
+        }
+      }
+      static now() {
+        return MOCK_NOW.getTime();
+      }
+    } as typeof Date;
+    global.Date = MockDate;
+  });
+
+  afterEach(() => {
+    global.Date = originalDate;
+  });
+
+  it("parses '7d' as 7 days ago", () => {
+    const result = parseSince("7d");
+    expect(result).not.toBeNull();
+    expect(result!.toISOString().split("T")[0]).toBe("2025-12-01");
+  });
+
+  it("returns null for invalid format", () => {
+    expect(parseSince("7x")).toBeNull();
+    expect(parseSince("abc")).toBeNull();
+    expect(parseSince("")).toBeNull();
+  });
+});
+```
+
+**Key patterns**:
+- Mock time for determinism
+- Test both valid and invalid inputs
+- Use `beforeEach`/`afterEach` for setup/teardown
+
+### CLI Integration Test: Spec-Driven Approach
+
+Define test specs declaratively, run them with a generic runner.
+
+```typescript
+// spec file: taxonomy-cli.spec.ts
+export interface CLITestSpec {
+  id: string;
+  name: string;
+  command: string;
+  expected: {
+    contains?: string[];
+    notContains?: string[];
+    exitCode?: number;
+  };
+  skip?: boolean;
+}
+
+export const taxonomyCLITestSpecs: CLITestSpec[] = [
+  {
+    id: "TEST-TAX-CLI-001",
+    name: "Taxonomy list shows available taxonomies",
+    command: "bun run ctx.ts taxonomy list",
+    expected: {
+      contains: ["Available taxonomies", "default"],
+      exitCode: 0,
+    },
+  },
+  {
+    id: "TEST-TAX-CLI-005",
+    name: "Taxonomy validate rejects invalid tags",
+    command: 'bun run ctx.ts taxonomy validate "INVALID,type/fleeting"',
+    expected: {
+      contains: ["Invalid tags", "INVALID"],
+      exitCode: 1,
+    },
+  },
+];
+```
+
+```typescript
+// runner file: cli-specs.test.ts
+import { describe, it, expect } from "bun:test";
+import { exec } from "child_process";
+import { promisify } from "util";
+import { taxonomyCLITestSpecs, CLITestSpec } from "../specs/taxonomy-cli.spec";
+
+const execAsync = promisify(exec);
+
+async function runCommand(command: string) {
+  try {
+    const { stdout, stderr } = await execAsync(command, { timeout: 60000 });
+    return { stdout, stderr, exitCode: 0 };
+  } catch (error: any) {
+    return { stdout: error.stdout || "", stderr: error.stderr || "", exitCode: error.code || 1 };
+  }
+}
+
+function runSpec(spec: CLITestSpec) {
+  const testFn = spec.skip ? it.skip : it;
+  testFn(spec.name, async () => {
+    const result = await runCommand(spec.command);
+    const output = result.stdout + result.stderr;
+
+    if (spec.expected.contains) {
+      for (const text of spec.expected.contains) {
+        expect(output).toContain(text);
+      }
+    }
+    if (spec.expected.notContains) {
+      for (const text of spec.expected.notContains) {
+        expect(output).not.toContain(text);
+      }
+    }
+    if (spec.expected.exitCode !== undefined) {
+      expect(result.exitCode).toBe(spec.expected.exitCode);
+    }
+  });
+}
+
+describe("ctx CLI Integration Tests", () => {
+  for (const spec of taxonomyCLITestSpecs) {
+    runSpec(spec);
+  }
+});
+```
+
+**Key patterns**:
+- Separate spec definitions from test runner
+- Specs reference requirement IDs (TEST-TAX-CLI-001)
+- Test both success and failure cases (exitCode)
+- Skip flag for slow or flaky tests
+
+### Test Organization
+
+```
+project/
+├── test/
+│   ├── unit/           # Fast, isolated tests
+│   │   ├── parseSince.test.ts
+│   │   └── schema.test.ts
+│   ├── integration/    # CLI and system tests
+│   │   └── cli-specs.test.ts
+│   ├── specs/          # Declarative test specifications
+│   │   ├── taxonomy-cli.spec.ts
+│   │   └── rename-cli.spec.ts
+│   └── fixtures/       # Test data and mocks
+│       └── sample-event.json
+```
+
+### Checklist: Test Quality
+
+| Criterion | Check |
+|-----------|-------|
+| **Deterministic** | Run 3 times, all same result |
+| **Fast** | Unit tests complete in <100ms |
+| **Isolated** | No test depends on another's state |
+| **Readable** | Test name describes what's tested |
+| **Verifiable** | Outcome is binary pass/fail |
+
+---
+
 ## Source
 
 Extracted from: [Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
