@@ -1,11 +1,11 @@
-# Step 1: SPECIFY - Create Change Proposal
+# Step 1: SPECIFY - Create Feature Specification
 
 **Phase**: Specification | **Gate**: Human Approval Required
 
 ---
 
 ## Context
-- **Playbook:** SpecFirst Development
+- **Playbook:** SpecFlow Development
 - **Agent:** {{AGENT_NAME}}
 - **Project:** {{AGENT_PATH}}
 - **Auto Run Folder:** {{AUTORUN_FOLDER}}
@@ -13,42 +13,54 @@
 
 ## Objective
 
-Create a structured change proposal with specifications that define what will be built.
+Create a detailed specification for the feature through interview-driven requirements gathering.
 
 ## Instructions
 
-### 1. Identify the Change
+### 1. Initialize Project (if needed)
 
-- [ ] **Read user requirements** from the task description or input files
-- [ ] **Determine change name** (kebab-case: `add-feature`, `fix-bug-123`)
-- [ ] **Document rationale** in `{{AUTORUN_FOLDER}}/LOOP_{{LOOP_NUMBER}}_REQUIREMENTS.md`
+- [ ] **Check if SpecFlow initialized**:
+  ```bash
+  specflow status
+  ```
 
-### 2. Invoke SpecFirst Proposal
+- [ ] **If not initialized**, run:
+  ```bash
+  specflow init "Description of the application or project"
+  ```
+  This decomposes the high-level description into features.
 
-- [ ] **Run `/openspec-proposal`** to create the spec structure:
+### 2. Check Current Status
 
-```
-/openspec-proposal
-> What feature or change? [change-name]
-> Which skill/project? [target-project]
-```
+- [ ] **View feature queue**:
+  ```bash
+  specflow status
+  ```
 
-The command creates:
-```
-openspec/changes/[change-name]/
-├── proposal.md     ← Summary, impact, rationale
-├── tasks.md        ← Implementation checklist
-└── specs/
-    └── feature.md  ← SHALL/MUST requirements
-```
+- [ ] **Identify the next feature** to work on (highest priority pending)
 
-### 3. Validate Spec Quality
+### 3. Create Specification
+
+- [ ] **Run the specify phase** for the target feature:
+  ```bash
+  specflow specify <feature-id>
+  ```
+
+  Example: `specflow specify F-001`
+
+  This creates:
+  ```
+  specflow/<feature-id>/
+  └── spec.md     ← Detailed requirements
+  ```
+
+### 4. Validate Spec Quality
 
 - [ ] **Check spec format** against `docs/TDD-EVALS.md`:
 
 | Criterion | Check |
 |-----------|-------|
-| SHALL statements are testable | Each can be verified by a test |
+| Requirements are testable | Each can be verified by a test |
 | Requirements are atomic | One requirement per statement |
 | No ambiguity | Clear, unambiguous language |
 | Dependencies identified | External dependencies noted |
@@ -60,33 +72,27 @@ openspec/changes/[change-name]/
 | Deterministic code preferred | | |
 | CLI interfaces where applicable | | |
 | UNIX philosophy (single purpose) | | |
-| Skill-based organization | | |
 
-### 4. Initialize State Tracking
+### 5. Verify Phase Complete
 
-- [ ] **Run `specfirst init`** if not already initialized:
+- [ ] **Check feature status**:
   ```bash
-  specfirst init
+  specflow status --json | jq '.features[] | select(.id=="<feature-id>")'
   ```
 
-- [ ] **Verify state tracking**:
-  ```bash
-  specfirst status
-  ```
+- [ ] **Confirm phase is "specify"**
 
 ## Output
 
-- `openspec/changes/[change-name]/` folder structure
-- `{{AUTORUN_FOLDER}}/LOOP_{{LOOP_NUMBER}}_REQUIREMENTS.md` with captured requirements
-- `.specfirst/state.json` initialized
+- `specflow/<feature-id>/spec.md` with detailed requirements
+- Feature status updated in database
 
 ## Human Gate
 
-**STOP** - Present specs to human for review before proceeding.
+**STOP** - Present spec to human for review before proceeding.
 
 Show:
-1. `proposal.md` summary
-2. `specs/*.md` requirements
-3. `tasks.md` breakdown
+1. `spec.md` requirements
+2. Feature description and rationale
 
 **Only proceed to Step 2 after human approval.**

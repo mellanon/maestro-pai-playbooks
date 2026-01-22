@@ -138,10 +138,10 @@ This playbook validates work against these principles:
 
 | Document | Purpose | Used In |
 |----------|---------|---------|
-| `docs/PAI-PRINCIPLES.md` | Founding design principles | Steps 1, 4 |
-| `docs/SKILL-BEST-PRACTICES.md` | Skill structure guidelines | Step 4 |
-| `docs/TDD-EVALS.md` | Test patterns and eval criteria | Steps 2, 3 |
-| `docs/RELEASE-FRAMEWORK.md` | Release discipline | Step 5 |
+| `docs/PAI-PRINCIPLES.md` | Founding design principles | Steps 1-3 (spec, plan, tasks) |
+| `docs/SKILL-BEST-PRACTICES.md` | Skill structure guidelines | Step 2 (plan) |
+| `docs/TDD-EVALS.md` | Test patterns and eval criteria | Steps 4-5 (implement, verify) |
+| `docs/RELEASE-FRAMEWORK.md` | Release discipline | Step 6 (complete) |
 
 ## Customization
 
