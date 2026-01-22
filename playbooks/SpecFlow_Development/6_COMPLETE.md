@@ -80,7 +80,74 @@ The `specflow complete` command includes the **Doctorow Gate** - a checklist ens
 
   Feature should show: `● complete`
 
-### 6. Prepare for Next Feature
+### 6. Update Changelog
+
+- [ ] **Generate changelog entry from spec**:
+
+  Read the feature's `spec.md` and extract:
+  - Feature name and description
+  - Key capabilities added
+  - Breaking changes (if any)
+
+- [ ] **Update CHANGELOG.md**:
+  ```markdown
+  ## [Unreleased]
+
+  ### Added
+  - [Feature]: [Description from spec.md]
+
+  ### Changed
+  - [Any modifications to existing behavior]
+
+  ### Fixed
+  - [Bug fixes included in this feature]
+  ```
+
+### 7. Sanitization Checklist
+
+Before creating PR, verify no sensitive data is included.
+
+- [ ] **Check for secrets**:
+  ```bash
+  grep -rE "(API_KEY|TOKEN|SECRET|PASSWORD)" --include="*.ts" --include="*.md"
+  ```
+
+- [ ] **Check for personal paths**:
+  ```bash
+  grep -r "/Users/" --include="*.ts" --include="*.md"
+  ```
+
+- [ ] **Check for hardcoded usernames**:
+  ```bash
+  grep -rE "(your-username|your-email)" --include="*.ts" --include="*.md"
+  ```
+
+- [ ] **Verify config externalized**:
+  - [ ] Secrets in `.env` files (not committed)
+  - [ ] No hardcoded credentials in source
+
+### 8. Create File Inventory
+
+- [ ] **List files for PR** in `{{AUTORUN_FOLDER}}/FILE_INVENTORY.md`:
+
+  ```markdown
+  ## File Inventory
+
+  ### Include (✅)
+  | File | Reason |
+  |------|--------|
+  | `src/feature.ts` | Core implementation |
+  | `test/feature.test.ts` | Test coverage |
+  | `docs/feature.md` | Documentation |
+
+  ### Exclude (❌)
+  | Path | Reason |
+  |------|--------|
+  | `.env` | Contains secrets |
+  | `test/fixtures/` | May contain PII |
+  ```
+
+### 9. Prepare for Next Feature
 
 - [ ] **Check if more features pending**:
   ```bash
@@ -94,6 +161,8 @@ The `specflow complete` command includes the **Doctorow Gate** - a checklist ens
 ## Output
 
 - Feature marked complete in database
+- `CHANGELOG.md` updated with feature entry
+- `{{AUTORUN_FOLDER}}/FILE_INVENTORY.md` with PR file list
 - `{{AUTORUN_FOLDER}}/COMPLETION.md` summary
 
 ## Human Gate
@@ -103,7 +172,9 @@ The `specflow complete` command includes the **Doctorow Gate** - a checklist ens
 Show:
 1. `specflow status` output
 2. Test results summary
-3. Files created/modified
+3. CHANGELOG.md entry
+4. FILE_INVENTORY.md (files for PR)
+5. Sanitization check results
 
 ## Post-Completion
 
