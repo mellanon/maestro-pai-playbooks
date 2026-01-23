@@ -11,6 +11,15 @@
 - **Auto Run Folder:** {{AUTORUN_FOLDER}}
 - **Loop:** {{LOOP_NUMBER}}
 
+## Input Specification
+
+**Read and analyze the requirements specification:**
+```
+{{AUTORUN_FOLDER}}/assets/SPEC.md
+```
+
+This file contains the feature requirements to implement.
+
 ## Objective
 
 Create a detailed specification for the feature through interview-driven requirements gathering.
@@ -26,7 +35,7 @@ Create a detailed specification for the feature through interview-driven require
 
 - [ ] **If not initialized**, load from requirements spec:
   ```bash
-  specflow init --from-spec docs/[Your-Requirements].md
+  specflow init --from-spec {{AUTORUN_FOLDER}}/assets/SPEC.md
   ```
 
   Or describe the project:
