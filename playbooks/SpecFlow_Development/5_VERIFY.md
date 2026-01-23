@@ -6,10 +6,7 @@
 
 ## Context
 - **Playbook:** SpecFlow Development
-- **Agent:** Signal-2
-- **Project:** /Users/andreas/Developer/pai/versions/worktrees/signal-agent-2
-- **Auto Run Folder:** /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development
-- **Loop:** 00001
+- **State Directory:** `.maestro/` (in project root)
 
 ## Objective
 
@@ -19,15 +16,15 @@ Verify implementation progress and determine whether to continue looping or proc
 
 ### 1. Run Test Suite
 
-- [x] **Execute all tests**: *(2026-01-23 Signal-1: FINAL - 105 tests pass, 0 fail)*
+- [ ] **Execute all tests**:
   ```bash
   bun test
   # or project-specific test command
   ```
 
-- [x] **Record results** in `{{AUTORUN_FOLDER}}/outputs/LOOP_{{LOOP_NUMBER}}_TEST_RESULTS.md`: *(2026-01-23 Signal-1: FINAL - Updated with 105 tests, 6/6 tasks complete)*
+- [ ] **Record results** in `.maestro/outputs/LOOP_TEST_RESULTS.md`:
   ```markdown
-  # Test Results - Loop 00001
+  # Test Results - Loop
 
   ## Summary
   - **Tests Run**: XX
@@ -40,39 +37,30 @@ Verify implementation progress and determine whether to continue looping or proc
 
 ### 2. Check Feature Progress
 
-- [x] **View current status**: *(2026-01-23 Signal-1: FINAL - All 6 tasks complete)*
+- [ ] **View current status**:
   ```bash
   specflow status
   ```
-  **Status:**
-  - F-1 Event Schema and Types:
-    - T-1.1 Core interfaces ✅ COMPLETE
-    - T-1.2 Data payload types ✅ COMPLETE
-    - T-2.1 Type guards ✅ COMPLETE
-    - T-2.2 Factory functions ✅ COMPLETE
-    - T-3.1 Module entry point ✅ COMPLETE
-    - T-3.2 Unit tests ✅ COMPLETE
-  - **6 of 6 tasks complete (100%)**
 
-- [x] **Validate feature phases complete**: *(2026-01-23 Signal-1: FINAL - All phases complete)*
+- [ ] **Validate feature phases complete**:
   ```bash
   specflow validate <feature-id>
   ```
 
   This checks:
-  - spec.md exists and is valid ✅
-  - plan.md exists and is valid ✅
-  - tasks.md exists and tasks are complete ✅ (6/6 complete)
+  - spec.md exists and is valid
+  - plan.md exists and is valid
+  - tasks.md exists and tasks are complete
 
 ### 3. Validate Against TDD-EVALS
 
-- [x] **Check eval criteria** *(2026-01-23 Signal-1: FINAL - All criteria pass)*:
+- [ ] **Check eval criteria**:
 
 | Criterion | Pass? |
 |-----------|-------|
-| Tests are deterministic | ✅ Ran 3 times: 105 pass, 0 fail each time |
-| Outcomes verifiable | ✅ Type guards, factories, and interfaces testable via 176 assertions |
-| Regression suite growing | ✅ 105 total tests covering all 6 tasks |
+| Tests are deterministic | |
+| Outcomes verifiable | |
+| Regression suite growing | |
 
 ### 4. Loop Decision
 
@@ -98,7 +86,7 @@ ELSE:
 
 ## Output
 
-- `{{AUTORUN_FOLDER}}/outputs/LOOP_{{LOOP_NUMBER}}_TEST_RESULTS.md`
+- `.maestro/outputs/LOOP_TEST_RESULTS.md`
 
 ## Loop Control Settings
 
@@ -110,41 +98,3 @@ For Maestro Auto Run:
 When this document completes:
 - If loop continues: Reset to Step 4
 - If done: Allow Step 6 to run
-
----
-
-## Verification Result (Loop 00001) - FINAL
-
-**Date:** 2026-01-23
-**Agent:** Signal-1 (final verification)
-
-### Assessment
-
-| Check | Result |
-|-------|--------|
-| Tests passing? | ✅ 105/105 tests pass |
-| Tests deterministic? | ✅ 3 runs identical (105 pass, 0 fail each run) |
-| All tasks complete? | ✅ 6 of 6 tasks complete |
-
-### Completed Tasks
-1. **T-1.1** - Core PAIEvent interface and EventType constants ✅
-2. **T-1.2** - Event data payload types (12 interfaces) ✅
-3. **T-2.1** - Type guards (9 guard functions) ✅
-4. **T-2.2** - Factory functions (10 factory functions) ✅
-5. **T-3.1** - Module entry point (index.ts with barrel exports) ✅
-6. **T-3.2** - Comprehensive test suite (105 tests, 176 assertions) ✅
-
-### Files Implemented
-- `Observability/lib/events/types.ts` - Core interfaces and constants
-- `Observability/lib/events/guards.ts` - Type guards
-- `Observability/lib/events/factory.ts` - Factory functions
-- `Observability/lib/events/index.ts` - Barrel exports
-- `Observability/lib/events/types.test.ts` - Type tests
-- `Observability/lib/events/guards.test.ts` - Guard tests
-- `Observability/lib/events/factory.test.ts` - Factory tests
-
-### Decision
-
-**Condition matched:** `all_tasks_complete AND tests_pass`
-
-**Action:** → **Proceed to Step 6** (complete)

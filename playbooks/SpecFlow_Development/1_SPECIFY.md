@@ -6,19 +6,15 @@
 
 ## Context
 - **Playbook:** SpecFlow Development
-- **Agent:** {{AGENT_NAME}}
-- **Project:** {{AGENT_PATH}}
-- **Auto Run Folder:** {{AUTORUN_FOLDER}}
-- **Loop:** {{LOOP_NUMBER}}
+- **State Directory:** `.maestro/` (in project root)
 
 ## Input Specification
 
-**Read and analyze the requirements specification:**
+**Read and analyze the requirements specification** (if available in assets):
+```bash
+ls assets/*.md 2>/dev/null  # Check for bundled spec
+ls docs/*.md 2>/dev/null    # Check for project docs
 ```
-{{AUTORUN_FOLDER}}/assets/SPEC.md
-```
-
-This file contains the feature requirements to implement.
 
 ## Objective
 
@@ -35,7 +31,7 @@ Create a detailed specification for the feature through interview-driven require
 
 - [ ] **If not initialized**, load from requirements spec:
   ```bash
-  specflow init --from-spec {{AUTORUN_FOLDER}}/assets/SPEC.md
+  specflow init --from-spec docs/REQUIREMENTS.md
   ```
 
   Or describe the project:
@@ -55,7 +51,7 @@ Create a detailed specification for the feature through interview-driven require
   specflow status
   ```
 
-- [ ] **Identify the next feature** to work on (highest priority pending)
+- [ ] **Identify the next feature** to work on (from `.maestro/CURRENT_FEATURE.md` or highest priority pending)
 
 ### 3. Create Specification
 
@@ -68,7 +64,7 @@ Create a detailed specification for the feature through interview-driven require
 
   This creates:
   ```
-  specflow/<feature-id>/
+  .specify/<feature-id>/
   └── spec.md     ← Detailed requirements
   ```
 
@@ -78,10 +74,10 @@ Create a detailed specification for the feature through interview-driven require
 
 | Criterion | Check |
 |-----------|-------|
-| Requirements are testable | Each can be verified by a test |
-| Requirements are atomic | One requirement per statement |
-| No ambiguity | Clear, unambiguous language |
-| Dependencies identified | External dependencies noted |
+| Requirements are testable | |
+| Requirements are atomic | |
+| No ambiguity | |
+| Dependencies identified | |
 
 - [ ] **Check design against `docs/PAI-PRINCIPLES.md`**:
 
@@ -102,7 +98,7 @@ Create a detailed specification for the feature through interview-driven require
 
 ## Output
 
-- `specflow/<feature-id>/spec.md` with detailed requirements
+- `.specify/<feature-id>/spec.md` with detailed requirements
 - Feature status updated in database
 
 ## Human Gate

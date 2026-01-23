@@ -6,10 +6,7 @@
 
 ## Context
 - **Playbook:** SpecFlow Development
-- **Agent:** Signal-1
-- **Project:** /Users/andreas/Developer/pai/versions/worktrees/signal-agent-1
-- **Auto Run Folder:** /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development
-- **Loop:** 00001
+- **State Directory:** `.maestro/` (in project root)
 
 ## Objective
 
@@ -19,16 +16,16 @@ Implement the next task using TDD (Test-Driven Development).
 
 - Tasks approved (tasks.md exists and human approved)
 - Feature phase is "tasks" or "implement"
-- **Outputs directory exists** (create if needed):
+- **State directory exists** (create if needed):
   ```bash
-  mkdir -p /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs
+  mkdir -p .maestro/outputs
   ```
 
 ## Instructions
 
 ### 1. Get Implementation Context
 
-- [x] **Get next task context**: (2026-01-23 Signal-2: Read spec, plan, tasks from .specify/specs/f-1-event-schema-and-types/)
+- [ ] **Get next task context**:
   ```bash
   specflow implement
   ```
@@ -46,12 +43,12 @@ Implement the next task using TDD (Test-Driven Development).
 
 ### 2. TDD Cycle: RED
 
-- [x] **Write failing test first**: (2026-01-23 Signal-2: Created guards.test.ts with 49 tests for T-2.1)
+- [ ] **Write failing test first**:
   - Create test file if doesn't exist
   - Write test for the current task's acceptance criteria
   - Run tests to confirm failure (RED state)
 
-- [x] **Record test creation** in `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/LOOP_00001_PROGRESS.md`: (2026-01-23 Signal-2)
+- [ ] **Record test creation** in `.maestro/outputs/LOOP_PROGRESS.md`:
   ```markdown
   ## Task: [task name]
   ### Tests Written
@@ -60,12 +57,12 @@ Implement the next task using TDD (Test-Driven Development).
 
 ### 3. TDD Cycle: GREEN
 
-- [x] **Implement minimal code** to make tests pass: (2026-01-23 Signal-2: Created guards.ts with 9 type guard functions)
+- [ ] **Implement minimal code** to make tests pass:
   - Focus only on current task
   - Don't over-engineer
   - Follow the plan.md architecture
 
-- [x] **Run tests** to confirm passing (GREEN state): (2026-01-23 Signal-2: 91 tests passing across 2 files)
+- [ ] **Run tests** to confirm passing (GREEN state):
   ```bash
   bun test
   # or project-specific test command
@@ -73,14 +70,14 @@ Implement the next task using TDD (Test-Driven Development).
 
 ### 4. TDD Cycle: REFACTOR (if needed)
 
-- [x] **Clean up code** while keeping tests green: (2026-01-23 Signal-2: Code already clean, no refactoring needed)
+- [ ] **Clean up code** while keeping tests green:
   - Remove duplication
   - Improve naming
   - Keep it simple
 
 ### 5. Update Progress
 
-- [x] **Update progress file**: (2026-01-23 Signal-2: Updated LOOP_00001_PROGRESS.md with T-2.1 details)
+- [ ] **Update progress file**:
   ```markdown
   ### Implementation
   - Files created: [list]
@@ -92,7 +89,7 @@ Implement the next task using TDD (Test-Driven Development).
 
 - New/modified source files
 - New/modified test files
-- `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/LOOP_00001_PROGRESS.md` updated
+- `.maestro/outputs/LOOP_PROGRESS.md` updated
 
 ## Next
 

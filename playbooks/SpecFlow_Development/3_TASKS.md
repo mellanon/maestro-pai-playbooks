@@ -6,10 +6,7 @@
 
 ## Context
 - **Playbook:** SpecFlow Development
-- **Agent:** {{AGENT_NAME}}
-- **Project:** {{AGENT_PATH}}
-- **Auto Run Folder:** {{AUTORUN_FOLDER}}
-- **Loop:** {{LOOP_NUMBER}}
+- **State Directory:** `.maestro/` (in project root)
 
 ## Objective
 
@@ -41,7 +38,7 @@ Break the feature into reviewable implementation units with dependencies.
 
   This creates:
   ```
-  specflow/<feature-id>/
+  .specify/<feature-id>/
   ├── spec.md      ← (from step 1)
   ├── plan.md      ← (from step 2)
   └── tasks.md     ← Implementation units
@@ -73,7 +70,7 @@ Break the feature into reviewable implementation units with dependencies.
 
 ## Output
 
-- `specflow/<feature-id>/tasks.md` with implementation breakdown
+- `.specify/<feature-id>/tasks.md` with implementation breakdown
 - Feature phase updated to "tasks"
 
 ## Human Gate

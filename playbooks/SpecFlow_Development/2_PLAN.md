@@ -6,10 +6,7 @@
 
 ## Context
 - **Playbook:** SpecFlow Development
-- **Agent:** {{AGENT_NAME}}
-- **Project:** {{AGENT_PATH}}
-- **Auto Run Folder:** {{AUTORUN_FOLDER}}
-- **Loop:** {{LOOP_NUMBER}}
+- **State Directory:** `.maestro/` (in project root)
 
 ## Objective
 
@@ -41,7 +38,7 @@ Create a technical architecture plan including data models, failure modes, and d
 
   This creates:
   ```
-  specflow/<feature-id>/
+  .specify/<feature-id>/
   ├── spec.md      ← (from step 1)
   └── plan.md      ← Architecture decisions
   ```
@@ -59,7 +56,7 @@ Create a technical architecture plan including data models, failure modes, and d
 | Dependencies | |
 | Testing strategy | |
 
-- [ ] **Check design against `docs/PAI-PRINCIPLES.md`**:
+- [ ] **Check design against PAI principles**:
 
 | Principle | Applied? |
 |-----------|----------|
@@ -77,7 +74,7 @@ Create a technical architecture plan including data models, failure modes, and d
 
 ## Output
 
-- `specflow/<feature-id>/plan.md` with technical architecture
+- `.specify/<feature-id>/plan.md` with technical architecture
 - Feature phase updated to "plan"
 
 ## Human Gate
