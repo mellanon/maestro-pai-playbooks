@@ -25,7 +25,7 @@ Verify implementation progress and determine whether to continue looping or proc
   # or project-specific test command
   ```
 
-- [x] **Record results** in `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/LOOP_00001_TEST_RESULTS.md`: *(2026-01-23 Signal-1: FINAL - Updated with 105 tests, 6/6 tasks complete)*
+- [x] **Record results** in `{{AUTORUN_FOLDER}}/outputs/LOOP_{{LOOP_NUMBER}}_TEST_RESULTS.md`: *(2026-01-23 Signal-1: FINAL - Updated with 105 tests, 6/6 tasks complete)*
   ```markdown
   # Test Results - Loop 00001
 
@@ -98,7 +98,7 @@ ELSE:
 
 ## Output
 
-- `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/LOOP_00001_TEST_RESULTS.md`
+- `{{AUTORUN_FOLDER}}/outputs/LOOP_{{LOOP_NUMBER}}_TEST_RESULTS.md`
 
 ## Loop Control Settings
 

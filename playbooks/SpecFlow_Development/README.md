@@ -15,9 +15,17 @@ Orchestrates the SpecFlow methodology for ANY software project. Takes a requirem
 - **Progress Dashboard**: Web UI for tracking all features
 - **Human Gates**: No code written until spec, plan, and tasks are approved
 
-## The Four-Phase Workflow
+## The Multi-Feature Workflow
 
 ```
+┌─────────────────────────────────────────────────────────────┐
+│  STEP 0: SELECT FEATURE                                     │
+├─────────────────────────────────────────────────────────────┤
+│  0_SELECT_FEATURE.md → Check/select next feature (by ID)    │
+│                        → Creates CURRENT_FEATURE.md          │
+│                        → Initializes if phase is "none"      │
+└─────────────────────────────────────────────────────────────┘
+                        ↓ (automatic)
 ┌─────────────────────────────────────────────────────────────┐
 │  PHASE 1: SPECIFY                                           │
 ├─────────────────────────────────────────────────────────────┤
@@ -57,8 +65,30 @@ Orchestrates the SpecFlow methodology for ANY software project. Takes a requirem
 ├─────────────────────────────────────────────────────────────┤
 │  6_COMPLETE.md       → Validation and marking complete      │
 │                        → specflow complete <feature>         │
+│                        → Loops back to Step 0 for next       │
+└─────────────────────────────────────────────────────────────┘
+         │
+         └────────────────────────────────────────┐
+                                                  ↓
+┌─────────────────────────────────────────────────────────────┐
+│  FEATURE LOOP                                               │
+├─────────────────────────────────────────────────────────────┤
+│  6_COMPLETE.md       → Archives completed feature           │
+│  (Tasks 10-13)         → Selects next feature by ID         │
+│                        → Loops to Step 0, OR exits if done  │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+## Feature Ordering
+
+Features are processed in **ID order** (F-1, F-2, F-3...) NOT by priority.
+
+**Why ID order?**
+- Predictable sequence for planning
+- Dependencies can be ordered by ID
+- Priority is available for manual overrides
+
+**To override:** Edit `CURRENT_FEATURE.md` with your preferred feature ID before running.
 
 ## Prerequisites
 
@@ -112,8 +142,15 @@ This decomposes the requirements into features in the queue.
 | `specflow/[feature]/spec.md` | Detailed specification | Yes |
 | `specflow/[feature]/plan.md` | Technical architecture plan | Yes |
 | `specflow/[feature]/tasks.md` | Implementation task breakdown | Yes (updated) |
-| `LOOP_{{N}}_PROGRESS.md` | Implementation progress per loop | Yes |
-| `LOOP_{{N}}_TEST_RESULTS.md` | Test execution results | Updated each loop |
+| `CURRENT_FEATURE.md` | Active feature ID and context | Per feature |
+| `outputs/COMPLETED_FEATURES/` | Archive of completed feature contexts | Yes |
+| `outputs/PLAYBOOK_LOG.md` | Feature transition history | Yes |
+| `outputs/LOOP_{{N}}_PROGRESS.md` | Implementation progress per loop | Per feature |
+| `outputs/LOOP_{{N}}_TEST_RESULTS.md` | Test execution results | Per feature |
+| `outputs/FILE_INVENTORY.md` | Files for PR | Per feature |
+| `outputs/COMPLETION.md` | Feature completion summary | Per feature |
+
+**Note:** Generated artifacts are written to the `outputs/` subdirectory to keep them separate from playbook documents in Maestro's document picker.
 
 ## The SpecFlow Skill
 
@@ -171,10 +208,36 @@ Each loop iteration:
 
 ## Exit Conditions
 
-- **Success**: All tasks complete, tests pass → runs `specflow complete <feature>`
+- **Feature Complete**: All tasks complete, tests pass → runs `specflow complete <feature>` → loops to next feature
+- **All Features Complete**: No pending features remain → exits playbook
 - **Max Loops**: Reached loop limit → exits with partial progress
 - **Validation Failure**: `specflow validate` fails → stops for review
 - **Blocked**: Task has unsatisfied dependencies → waits or halts
+
+## Alternative: Split Playbooks with Human Review Gates
+
+If you want to **review specifications before implementation begins**, use the split playbook trilogy instead of this monolithic playbook:
+
+| Playbook | Phase | What It Does | Exit Point |
+|----------|-------|--------------|------------|
+| **SpecFlow_1_Specify** | Specify | Creates `spec.md` for all features | Exits for human review of specs |
+| **SpecFlow_2_Plan** | Plan + Tasks | Creates `plan.md` and `tasks.md` | Exits for human review of plans |
+| **SpecFlow_3_Implement** | Implement | TDD implementation of all features | Exits when all features complete |
+
+**Why use split playbooks?**
+- Review all specifications before any planning begins
+- Review all plans before any implementation begins
+- Natural checkpoints for human oversight
+- Clear exit conditions (no eternal loops)
+
+**Workflow:**
+```
+1. Run SpecFlow_1_Specify → Review all spec.md files
+2. Run SpecFlow_2_Plan → Review all plan.md and tasks.md files
+3. Run SpecFlow_3_Implement → Implementation with TDD
+```
+
+See `playbooks/SpecFlow_1_Specify/`, `playbooks/SpecFlow_2_Plan/`, and `playbooks/SpecFlow_3_Implement/` for details.
 
 ## Constitutional Gates (Reference Documents)
 

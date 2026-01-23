@@ -263,7 +263,7 @@ Before creating PR, verify no sensitive data is included.
 
 ### 8. Create File Inventory
 
-- [x] **List files for PR** in `{{AUTORUN_FOLDER}}/outputs/FILE_INVENTORY.md`:
+- [x] **List files for PR** in `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/FILE_INVENTORY.md`:
 
   **Completed (2026-01-23) - Signal-2:**
   Created comprehensive FILE_INVENTORY.md containing:
@@ -298,7 +298,7 @@ Before creating PR, verify no sensitive data is included.
   ```
 
   If more features:
-  - Document completion in `{{AUTORUN_FOLDER}}/outputs/COMPLETION.md`
+  - Document completion in `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/COMPLETION.md`
   - Optionally continue with next feature
 
   **Completed (2026-01-23) - Signal-1:**
@@ -317,8 +317,8 @@ Before creating PR, verify no sensitive data is included.
 
 - Feature marked complete in database
 - `CHANGELOG.md` updated with feature entry
-- `{{AUTORUN_FOLDER}}/outputs/FILE_INVENTORY.md` with PR file list
-- `{{AUTORUN_FOLDER}}/outputs/COMPLETION.md` summary
+- `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/FILE_INVENTORY.md` with PR file list
+- `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/COMPLETION.md` summary
 
 ## Human Gate
 
@@ -376,12 +376,12 @@ After completing a feature, the playbook MUST check for and initialize the next 
 
   Move current feature file to completed archive:
   ```bash
-  mv {{AUTORUN_FOLDER}}/CURRENT_FEATURE.md {{AUTORUN_FOLDER}}/outputs/COMPLETED_FEATURES/FEATURE_<id>_2026-01-23.md
+  mv /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/CURRENT_FEATURE.md /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/COMPLETED_FEATURES/FEATURE_<id>_2026-01-23.md
   ```
 
   If `COMPLETED_FEATURES/` doesn't exist, create it:
   ```bash
-  mkdir -p {{AUTORUN_FOLDER}}/outputs/COMPLETED_FEATURES
+  mkdir -p /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/COMPLETED_FEATURES
   ```
 
   **Completed (2026-01-23) - Signal-1:**
@@ -403,7 +403,7 @@ After completing a feature, the playbook MUST check for and initialize the next 
   - Proceed to Task 12
 
   **If NO features remain** (NEXT_FEATURE is empty):
-  - Write to `{{AUTORUN_FOLDER}}/CURRENT_FEATURE.md`:
+  - Write to `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/CURRENT_FEATURE.md`:
     ```markdown
     # Current Feature
     ALL_FEATURES_COMPLETE
@@ -417,7 +417,7 @@ After completing a feature, the playbook MUST check for and initialize the next 
 
 - [ ] **Create new CURRENT_FEATURE.md for next feature**:
 
-  Write to `{{AUTORUN_FOLDER}}/CURRENT_FEATURE.md`:
+  Write to `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/CURRENT_FEATURE.md`:
   ```markdown
   # Current Feature
 
@@ -447,15 +447,15 @@ After completing a feature, the playbook MUST check for and initialize the next 
 
   Remove old loop files (keep COMPLETED_FEATURES archive):
   ```bash
-  rm -f {{AUTORUN_FOLDER}}/outputs/LOOP_*_PROGRESS.md
-  rm -f {{AUTORUN_FOLDER}}/outputs/LOOP_*_TEST_RESULTS.md
-  rm -f {{AUTORUN_FOLDER}}/outputs/FILE_INVENTORY.md
-  rm -f {{AUTORUN_FOLDER}}/outputs/COMPLETION.md
+  rm -f /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/LOOP_*_PROGRESS.md
+  rm -f /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/LOOP_*_TEST_RESULTS.md
+  rm -f /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/FILE_INVENTORY.md
+  rm -f /Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/COMPLETION.md
   ```
 
 - [ ] **Log feature transition**:
 
-  Append to `{{AUTORUN_FOLDER}}/outputs/PLAYBOOK_LOG.md`:
+  Append to `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/outputs/PLAYBOOK_LOG.md`:
   ```markdown
   ## Feature Transition - 2026-01-23
 
