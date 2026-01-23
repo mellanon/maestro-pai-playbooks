@@ -28,116 +28,32 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 1: Initialize SpecFlow (Fresh Start Only)
 
-- [ ] **Check if SpecFlow is initialized**:
-  ```bash
-  ls -la .specflow/ 2>/dev/null || ls -la .specify/ 2>/dev/null || echo "NOT_INITIALIZED"
-  ```
-
-  **If NOT_INITIALIZED:**
-
-  1. Look for a requirements spec in the project:
-     ```bash
-     ls docs/*.md 2>/dev/null | head -5
-     ```
-
-  2. Initialize SpecFlow from the requirements:
-     ```bash
-     # If requirements file exists
-     specflow init --from-spec docs/REQUIREMENTS.md
-
-     # Or if no spec file, initialize empty and add features manually
-     specflow init
-     ```
-
-  3. Verify features were created:
-     ```bash
-     specflow status
-     ```
+- [x] **Check if SpecFlow is initialized**: ✅ SpecFlow already initialized (`.specflow/` directory exists with features.db and evals.db)
 
   **If already initialized:** Skip to Task 2.
 
 ### Task 2: Check Current Feature State
 
-- [ ] **Read feature state file** (if exists):
-
-  Check if `.maestro/CURRENT_FEATURE.md` exists:
-  ```bash
-  cat .maestro/CURRENT_FEATURE.md 2>/dev/null || echo "NO_CURRENT_FEATURE"
-  ```
-
-  If it exists and contains a feature ID, that feature is IN PROGRESS. Skip to Task 5.
-
-  If it doesn't exist or is empty, proceed to Task 3 to select a new feature.
+- [x] **Read feature state file** (if exists): ✅ `.maestro/CURRENT_FEATURE.md` exists with F-7 (PreToolUse Hook Instrumentation) at phase `none`. Feature is IN PROGRESS. Skipping to Task 5.
 
 ### Task 3: Get Next Feature (By ID Order)
 
-- [ ] **List all pending features and sort by ID**:
-  ```bash
-  # Get JSON output and sort by feature ID number
-  specflow status --json | jq -r '.features[] | select(.status == "pending") | .id' | sort -t'-' -k2 -n | head -1
-  ```
+- [x] **List all pending features and sort by ID**: ⏭️ SKIPPED - Current feature F-7 already set in CURRENT_FEATURE.md
 
-  **Alternative (human-readable):**
-  ```bash
-  specflow status --json | jq -r '.features[] | select(.status == "pending") | "\(.id)\t\(.name)"' | sort -t'-' -k2 -n
-  ```
-
-  This returns features in F-1, F-2, F-3... order (NOT by priority).
-
-- [ ] **Select the FIRST feature from the sorted list**:
-
-  Record the feature ID (e.g., `F-2`) for the next task.
-
-  **If no pending features exist:** Write "ALL_FEATURES_COMPLETE" to `.maestro/CURRENT_FEATURE.md` and exit playbook.
+- [x] **Select the FIRST feature from the sorted list**: ⏭️ SKIPPED - F-7 already selected
 
 ### Task 4: Initialize Feature Context
 
-- [ ] **Check feature phase and initialize if needed**:
-  ```bash
-  specflow status <feature-id>
-  ```
+- [x] **Check feature phase and initialize if needed**: ⏭️ SKIPPED - F-7 already initialized in CURRENT_FEATURE.md
 
-  Based on the current phase:
-
-  | Current Phase | Action |
-  |---------------|--------|
-  | `none` | Run `specflow specify <feature-id>` to start |
-  | `specify` | Feature has spec, proceed to Step 1 |
-  | `plan` | Feature has plan, proceed to Step 2 |
-  | `tasks` | Feature has tasks, proceed to Step 3 |
-  | `implement` | Feature in progress, proceed to Step 4 |
-  | `complete` | Feature done, return to Task 3 for next |
-
-- [ ] **Write current feature to state file**:
-
-  Create/update `.maestro/CURRENT_FEATURE.md`:
-  ```markdown
-  # Current Feature
-
-  - **Feature ID:** <feature-id>
-  - **Feature Name:** <feature-name>
-  - **Started:** <date>
-  - **Phase:** <current-phase>
-
-  ## Feature Details
-
-  [Copy spec summary here if available]
-  ```
+- [x] **Write current feature to state file**: ⏭️ SKIPPED - CURRENT_FEATURE.md already exists with F-7
 
 ### Task 5: Verify Feature Ready
 
-- [ ] **Confirm feature is ready for playbook**:
-  ```bash
-  specflow status <feature-id>
-  ```
-
-  **Required state:** Feature exists and is not `complete`.
-
-  Record current phase for routing:
-  - Phase `none` or `specify` → Start at Step 1 (SPECIFY)
-  - Phase `plan` → Start at Step 2 (PLAN)
-  - Phase `tasks` → Start at Step 3 (TASKS)
-  - Phase `implement` → Start at Step 4 (IMPLEMENT)
+- [x] **Confirm feature is ready for playbook**: ✅ F-7 (PreToolUse Hook Instrumentation) verified:
+  - Status: `pending` (not complete)
+  - Phase: `none`
+  - **Routing:** Phase `none` → Start at Step 1 (SPECIFY)
 
 ## Output
 

@@ -21,14 +21,14 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 0: Initialize State Directory
 
-- [x] **Create state directory if needed**: ✅ Already exists with 7 completed feature records
+- [x] **Create state directory if needed**:
   ```bash
   mkdir -p .maestro/outputs/COMPLETED_FEATURES
   ```
 
 ### Task 1: Initialize SpecFlow (Fresh Start Only)
 
-- [x] **Check if SpecFlow is initialized**: ✅ Already initialized - `.specflow/` directory exists with features.db
+- [x] **Check if SpecFlow is initialized**: *(Already initialized - .specflow/ directory exists with features.db)*
   ```bash
   ls -la .specflow/ 2>/dev/null || ls -la .specify/ 2>/dev/null || echo "NOT_INITIALIZED"
   ```
@@ -58,7 +58,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 2: Check Current Feature State
 
-- [x] **Read feature state file** (if exists): ✅ Feature F-8 (PostToolUse Hook Instrumentation) in progress at phase "none" → Skip to Task 5
+- [x] **Read feature state file** (if exists): *(Feature F-9 is IN PROGRESS - Hook Timing Instrumentation, phase: none)*
 
   Check if `.maestro/CURRENT_FEATURE.md` exists:
   ```bash
@@ -71,7 +71,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 3: Get Next Feature (By ID Order)
 
-- [x] **List all pending features and sort by ID**: ⏭️ SKIPPED - Feature F-8 already in progress (from Task 2)
+- [x] **List all pending features and sort by ID**: *(SKIPPED - F-9 already selected as current feature)*
   ```bash
   # Get JSON output and sort by feature ID number
   specflow status --json | jq -r '.features[] | select(.status == "pending") | .id' | sort -t'-' -k2 -n | head -1
@@ -84,7 +84,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   This returns features in F-1, F-2, F-3... order (NOT by priority).
 
-- [x] **Select the FIRST feature from the sorted list**: ⏭️ SKIPPED - Feature F-8 already selected
+- [x] **Select the FIRST feature from the sorted list**: *(F-9 is current feature)*
 
   Record the feature ID (e.g., `F-2`) for the next task.
 
@@ -92,7 +92,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 4: Initialize Feature Context
 
-- [x] **Check feature phase and initialize if needed**: ⏭️ SKIPPED - Feature F-8 already initialized at phase "none"
+- [x] **Check feature phase and initialize if needed**: *(F-9 phase is `none`, needs specification)*
   ```bash
   specflow status <feature-id>
   ```
@@ -108,7 +108,7 @@ Select the next feature to implement and initialize it for the playbook workflow
   | `implement` | Feature in progress, proceed to Step 4 |
   | `complete` | Feature done, return to Task 3 for next |
 
-- [x] **Write current feature to state file**: ⏭️ SKIPPED - `.maestro/CURRENT_FEATURE.md` already exists for F-8
+- [x] **Write current feature to state file**: *(State file already exists with F-9)*
 
   Create/update `.maestro/CURRENT_FEATURE.md`:
   ```markdown
@@ -126,11 +126,12 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 5: Verify Feature Ready
 
-- [x] **Confirm feature is ready for playbook**: ✅ F-8 (PostToolUse Hook Instrumentation) verified
-  - Status: **pending** (not complete)
-  - Phase: **none**
-  - Priority: 4
-  - **Routing:** Phase `none` → Start at Step 1 (SPECIFY)
+- [x] **Confirm feature is ready for playbook**: *(F-9 "Hook Timing Instrumentation" verified - phase `none`, NOT complete. Routing → Step 1 SPECIFY)*
+  ```bash
+  specflow status <feature-id>
+  ```
+
+  **Required state:** Feature exists and is not `complete`.
 
   Record current phase for routing:
   - Phase `none` or `specify` → Start at Step 1 (SPECIFY)
