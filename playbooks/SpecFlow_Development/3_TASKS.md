@@ -1,6 +1,6 @@
 # Step 3: TASKS - Break Down Implementation
 
-**Phase**: Task Planning | **Gate**: Human Approval Required
+**Phase**: Task Planning | **Gate**: Automated
 
 ---
 
@@ -73,13 +73,6 @@ Break the feature into reviewable implementation units with dependencies.
 - `.specify/<feature-id>/tasks.md` with implementation breakdown
 - Feature phase updated to "tasks"
 
-## Human Gate
+## Next
 
-**STOP** - Present task breakdown to human for review before implementation.
-
-Show:
-1. `tasks.md` breakdown
-2. Task dependencies
-3. Estimated scope
-
-**Only proceed to Step 4 after human approval.**
+→ Proceed to Step 4 (IMPLEMENT) to begin TDD implementation.

@@ -1,6 +1,6 @@
 # Step 2: PLAN - Create Technical Architecture
 
-**Phase**: Planning | **Gate**: Human Approval Required
+**Phase**: Planning | **Gate**: Automated
 
 ---
 
@@ -77,13 +77,6 @@ Create a technical architecture plan including data models, failure modes, and d
 - `.specify/<feature-id>/plan.md` with technical architecture
 - Feature phase updated to "plan"
 
-## Human Gate
+## Next
 
-**STOP** - Present plan to human for review before proceeding.
-
-Show:
-1. `plan.md` architecture decisions
-2. Data models and interfaces
-3. Failure modes and mitigations
-
-**Only proceed to Step 3 after human approval.**
+→ Proceed to Step 3 (TASKS) to break down implementation units.

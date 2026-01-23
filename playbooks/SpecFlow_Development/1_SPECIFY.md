@@ -1,6 +1,6 @@
 # Step 1: SPECIFY - Create Feature Specification
 
-**Phase**: Specification | **Gate**: Human Approval Required
+**Phase**: Specification | **Gate**: Automated
 
 ---
 
@@ -101,12 +101,6 @@ Create a detailed specification for the feature through interview-driven require
 - `.specify/<feature-id>/spec.md` with detailed requirements
 - Feature status updated in database
 
-## Human Gate
+## Next
 
-**STOP** - Present spec to human for review before proceeding.
-
-Show:
-1. `spec.md` requirements
-2. Feature description and rationale
-
-**Only proceed to Step 2 after human approval.**
+→ Proceed to Step 2 (PLAN) to create technical architecture.
