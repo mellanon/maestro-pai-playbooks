@@ -1,6 +1,6 @@
 ---
 generation_date: 2026-01-22 14:45
-updated: 2026-01-22 18:00
+updated: 2026-01-23 14:00
 tags:
   - type/requirements
   - para/project
@@ -12,19 +12,67 @@ tags:
   - git/track
   - scope/personal
 source: research-session
+codename: Signal
 ---
 
-# PAI Observability Requirements
+# PAI Signal — Historical Observability Platform
 
-> *File-based event capture with optional forwarding to observability stack. PAI-first, extensible to other domains.*
+> *Codename: **Signal** — A historical observability platform that complements PAI's real-time observability server.*
+
+---
+
+## Relationship to PAI Observability Server
+
+> **Important:** This spec describes a *separate* platform from the existing PAI Observability server. They serve different purposes and are complementary.
+
+| System | PAI Observability Server | Signal (This Spec) |
+|--------|--------------------------|-------------------|
+| **Focus** | Real-time, current session | Historical, cross-session |
+| **Analogy** | Browser DevTools | Datadog/Grafana |
+| **Scope** | Single PAI instance | Multi-system (PAI + home automation + off-grid) |
+| **Storage** | In-memory (1000 events) | Persistent (weeks/months) |
+| **Use Case** | "What's happening now?" | "What happened last week?" |
+
+### How They Work Together
+
+```
+Claude Code Hooks
+       │
+       ▼
+   JSONL Events ─────┬────► PAI Observability Server (real-time dashboard)
+                     │
+                     └────► Vector Collector ────► Signal Stack (historical)
+```
+
+**Same instrumentation feeds both systems.** The hooks write JSONL files that:
+1. PAI Observability reads for real-time WebSocket streaming
+2. Vector collector tails for forwarding to the historical stack
+
+This avoids "reinventing the wheel" — we leverage the existing PAI Observability hooks while adding cross-session analysis capabilities.
+
+---
+
+## Core Building Blocks for Trusted AI Agents
+
+Based on AWS Bedrock Agent Core patterns, here are the foundational capabilities for autonomous AI systems:
+
+| Building Block | Purpose | Signal Coverage |
+|---------------|---------|-----------------|
+| **Policy** | Enforceable boundaries, not suggestions | Via hook validation |
+| **Identity** | Clear agency & delegation chains | session_id, agent_instance_id |
+| **Memory** | Context without poisoning risk | JSONL audit trail |
+| **Observability** | Full audit trail of decisions and actions | ✅ This spec |
+| **Evaluations** | Continuous quality assurance | Quality gates in SpecFirst |
+| **Runtime** | Isolation prevents cross-contamination | Container-based stack |
+| **Gateway** | Controlled blast radius for tools | Hook-level gating |
 
 ---
 
 ## Executive Summary
 
-**What:** A lightweight observability system for PAI that captures events to local JSONL files and optionally forwards them to a visualization stack.
+**What:** A historical observability platform (codename: Signal) that complements PAI's real-time server by providing cross-session analysis, multi-system aggregation, and alerting.
 
-**Why:** PAI agents run autonomously—you need to know what's happening, what's failing, and what it costs. Without observability, you're blind.
+**Why:** PAI agents run autonomously—you need to know what's happening, what's failing, and what it costs. Real-time visibility is solved by PAI Observability; **historical analysis** requires a persistent backend.
 
 **How:** Three-layer architecture (from nothing to full stack):
 
@@ -56,9 +104,9 @@ open http://localhost:3000
 
 ## Architecture Diagram
 
-![[assets/images/pai-observability-stack-architecture.png]]
+![PAI Observability Architecture](assets/pai-observability-architecture-v3.png)
 
-*Data flows left-to-right: Claude Code hooks emit events → JSONL files → Vector collector → VictoriaMetrics stack → Grafana dashboards*
+*Real-time + Historical from shared instrumentation. Same JSONL events feed both PAI Observability (current session visibility, like browser DevTools) and the Signal stack (cross-session analysis, like Datadog).*
 
 ---
 
