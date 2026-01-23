@@ -2637,29 +2637,117 @@ sinks:
       codec: json
 ```
 
-### A.4 Watchdog Script
+### A.4 Vector Health Watchdog
 
-```bash
-#!/bin/bash
-# $PAI_HOME/Observability/watchdog.sh
+The watchdog monitors Vector's health endpoint independently of the Docker stack. If Vector stops shipping logs, the watchdog alerts via Telegram (or other configured channels).
 
-HEARTBEAT_FILE="${PAI_HOME}/MEMORY/.collector-heartbeat"
-STALE_THRESHOLD=180  # 3 minutes
+**Architecture:**
+```
+┌─────────────────────────────────────────────────────┐
+│  macOS (independent of Docker)                      │
+│                                                     │
+│  launchd (every 2 min)                             │
+│       │                                             │
+│       ▼                                             │
+│  watchdog.ts                                        │
+│       │                                             │
+│       ├── curl localhost:8686/health                │
+│       │                                             │
+│       └── IF fail for 3 checks ──► Telegram Bot     │
+│                                         │           │
+│                                         ▼           │
+│                               📱 Your Phone         │
+└─────────────────────────────────────────────────────┘
+```
 
-if [ ! -f "$HEARTBEAT_FILE" ]; then
-  echo "Heartbeat file missing"
-  exit 1
-fi
+**Why this design:**
+- Vector's `/health` endpoint is the authoritative health signal
+- launchd runs independently of Docker (alerts even if entire stack is down)
+- Telegram provides instant mobile notification
+- 3 consecutive failures = 6 minutes before alerting (avoids flapping)
 
-HEARTBEAT=$(cat "$HEARTBEAT_FILE")
-NOW=$(date +%s)
-AGE=$((NOW - HEARTBEAT))
+```typescript
+// $PAI_HOME/Observability/watchdog.ts
+// Runs via launchd every 2 minutes
 
-if [ $AGE -gt $STALE_THRESHOLD ]; then
-  bun "${PAI_HOME}/Observability/notify-watchdog.ts" \
-    --message "Collector heartbeat stale: ${AGE}s (threshold: ${STALE_THRESHOLD}s)" \
-    --severity warning
-fi
+const VECTOR_HEALTH = "http://localhost:8686/health";
+const STATE_FILE = `${process.env.PAI_HOME}/MEMORY/.watchdog-state.json`;
+
+interface WatchdogState {
+  failures: number;
+  lastAlert?: number;
+}
+
+async function loadState(): Promise<WatchdogState> {
+  try {
+    return await Bun.file(STATE_FILE).json();
+  } catch {
+    return { failures: 0 };
+  }
+}
+
+async function saveState(state: WatchdogState): Promise<void> {
+  await Bun.write(STATE_FILE, JSON.stringify(state));
+}
+
+async function sendTelegramAlert(message: string): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  if (!token || !chatId) {
+    console.error("Telegram not configured");
+    return;
+  }
+
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: message,
+      parse_mode: "Markdown"
+    })
+  });
+}
+
+async function check(): Promise<void> {
+  const state = await loadState();
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    const res = await fetch(VECTOR_HEALTH, { signal: controller.signal });
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      // Reset on success
+      if (state.failures > 0) {
+        await saveState({ failures: 0 });
+      }
+      return;
+    }
+  } catch (e) {
+    // Health check failed
+  }
+
+  // Increment failures
+  state.failures++;
+  await saveState(state);
+
+  // Alert after 3 consecutive failures (6 minutes)
+  if (state.failures === 3) {
+    await sendTelegramAlert(
+      "🚨 *PAI Signal Stack Alert*\n\n" +
+      "Vector collector is DOWN.\n" +
+      "No logs being shipped to VictoriaLogs.\n\n" +
+      "*Recovery:*\n" +
+      "`docker compose -f ~/observability/docker-compose.yml up -d vector`"
+    );
+  }
+}
+
+await check();
 ```
 
 ### A.5 Watchdog Configuration (settings.json)
@@ -2669,18 +2757,64 @@ fi
   "observability": {
     "watchdog": {
       "enabled": true,
-      "heartbeat_path": "${PAI_HOME}/MEMORY/.collector-heartbeat",
-      "stale_threshold_seconds": 180,
+      "vector_health_url": "http://localhost:8686/health",
       "check_interval_seconds": 120,
-      "channels": [
-        { "type": "voice", "enabled": true },
-        { "type": "telegram", "enabled": false },
-        { "type": "ntfy", "enabled": false },
-        { "type": "macos_notification", "enabled": true }
-      ]
+      "failure_threshold": 3,
+      "channels": {
+        "telegram": {
+          "enabled": true,
+          "bot_token_env": "TELEGRAM_BOT_TOKEN",
+          "chat_id_env": "TELEGRAM_CHAT_ID"
+        },
+        "voice": {
+          "enabled": false
+        },
+        "ntfy": {
+          "enabled": false,
+          "topic": "pai-alerts"
+        }
+      }
     }
   }
 }
+```
+
+### A.6 Watchdog launchd Plist
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.pai.vector-watchdog</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/andreas/.bun/bin/bun</string>
+        <string>/Users/andreas/.claude/Observability/watchdog.ts</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>120</integer>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PAI_HOME</key>
+        <string>/Users/andreas/.claude</string>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/tmp/pai-watchdog.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/pai-watchdog.log</string>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
+```
+
+**Installation:**
+```bash
+cp com.pai.vector-watchdog.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/com.pai.vector-watchdog.plist
 ```
 
 ---
