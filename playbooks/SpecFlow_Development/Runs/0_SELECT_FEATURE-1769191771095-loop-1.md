@@ -29,7 +29,6 @@ Select the next feature to implement and initialize it for the playbook workflow
 ### Task 1: Initialize SpecFlow (Fresh Start Only)
 
 - [x] **Check if SpecFlow is initialized**:
-  ✅ **ALREADY INITIALIZED** - `.specflow/` directory exists with features.db. 15 features found (3 complete, 12 pending). Skipping initialization.
   ```bash
   ls -la .specflow/ 2>/dev/null || ls -la .specify/ 2>/dev/null || echo "NOT_INITIALIZED"
   ```
@@ -60,7 +59,6 @@ Select the next feature to implement and initialize it for the playbook workflow
 ### Task 2: Check Current Feature State
 
 - [x] **Read feature state file** (if exists):
-  ✅ **CURRENT FEATURE EXISTS** - F-4 (PII Scrubbing) is already selected and in `specify` phase. Skipping to Task 5.
 
   Check if `.maestro/CURRENT_FEATURE.md` exists:
   ```bash
@@ -73,9 +71,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 3: Get Next Feature (By ID Order)
 
-- [x] **SKIPPED** - Current feature F-4 already exists (set in Task 2). No new feature selection needed.
-
-~~- [ ] **List all pending features and sort by ID**:~~
+- [ ] **List all pending features and sort by ID**:
   ```bash
   # Get JSON output and sort by feature ID number
   specflow status --json | jq -r '.features[] | select(.status == "pending") | .id' | sort -t'-' -k2 -n | head -1
@@ -88,7 +84,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   This returns features in F-1, F-2, F-3... order (NOT by priority).
 
-~~- [ ] **Select the FIRST feature from the sorted list**:~~
+- [ ] **Select the FIRST feature from the sorted list**:
 
   Record the feature ID (e.g., `F-2`) for the next task.
 
@@ -96,9 +92,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 4: Initialize Feature Context
 
-- [x] **SKIPPED** - Current feature F-4 already initialized with context file at `.maestro/CURRENT_FEATURE.md`.
-
-~~- [ ] **Check feature phase and initialize if needed**:~~
+- [ ] **Check feature phase and initialize if needed**:
   ```bash
   specflow status <feature-id>
   ```
@@ -114,7 +108,7 @@ Select the next feature to implement and initialize it for the playbook workflow
   | `implement` | Feature in progress, proceed to Step 4 |
   | `complete` | Feature done, return to Task 3 for next |
 
-~~- [ ] **Write current feature to state file**:~~
+- [ ] **Write current feature to state file**:
 
   Create/update `.maestro/CURRENT_FEATURE.md`:
   ```markdown
@@ -133,14 +127,6 @@ Select the next feature to implement and initialize it for the playbook workflow
 ### Task 5: Verify Feature Ready
 
 - [x] **Confirm feature is ready for playbook**:
-  ✅ **FEATURE READY** - F-4 (PII Scrubbing) verified:
-  - Status: `pending` (not complete)
-  - Phase: `specify` (has spec.md)
-  - Spec exists at: `.specify/specs/f-4-pii-scrubbing/spec.md`
-  - Dependencies: F-1, F-2 (both complete)
-
-  **Routing:** Phase `specify` → **Start at Step 1 (SPECIFY)**
-
   ```bash
   specflow status <feature-id>
   ```
@@ -192,3 +178,23 @@ This playbook uses **ID-based ordering** (F-1, F-2, F-3...) NOT priority-based o
 ---
 
 **Next:** Step 1 (SPECIFY) - Begin requirements elicitation for selected feature
+
+---
+
+## Execution Notes (Loop 1)
+
+**Date:** 2026-01-24
+**Agent:** Signal-1
+
+### Completed:
+- Task 0: State directory already exists (`.maestro/outputs/COMPLETED_FEATURES/`)
+- Task 1: SpecFlow already initialized (`.specflow/` directory present with features.db)
+- Task 2: CURRENT_FEATURE.md exists with F-6 (SessionStop Hook Instrumentation) in progress
+- Tasks 3-4: Skipped (feature already selected per Task 2 instructions)
+- Task 5: Verified F-6 is ready - status: pending, phase: specify
+
+### Feature Selected:
+- **ID:** F-6
+- **Name:** SessionStop Hook Instrumentation
+- **Phase:** specify
+- **Next Step:** 1_SPECIFY.md (per routing logic: phase == "specify" → Step 1)

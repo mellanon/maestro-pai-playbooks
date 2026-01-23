@@ -25,11 +25,11 @@ Select the next feature to implement and initialize it for the playbook workflow
   ```bash
   mkdir -p .maestro/outputs/COMPLETED_FEATURES
   ```
+  ✅ **Loop 3:** Directory already exists with CURRENT_FEATURE.md and outputs/ subdirectory.
 
 ### Task 1: Initialize SpecFlow (Fresh Start Only)
 
 - [x] **Check if SpecFlow is initialized**:
-  ✅ **ALREADY INITIALIZED** - `.specflow/` directory exists with features.db. 15 features found (3 complete, 12 pending). Skipping initialization.
   ```bash
   ls -la .specflow/ 2>/dev/null || ls -la .specify/ 2>/dev/null || echo "NOT_INITIALIZED"
   ```
@@ -57,10 +57,11 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   **If already initialized:** Skip to Task 2.
 
+  ✅ **Loop 3:** SpecFlow already initialized - `.specflow/` exists with features.db and evals.db.
+
 ### Task 2: Check Current Feature State
 
 - [x] **Read feature state file** (if exists):
-  ✅ **CURRENT FEATURE EXISTS** - F-4 (PII Scrubbing) is already selected and in `specify` phase. Skipping to Task 5.
 
   Check if `.maestro/CURRENT_FEATURE.md` exists:
   ```bash
@@ -71,11 +72,11 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   If it doesn't exist or is empty, proceed to Task 3 to select a new feature.
 
+  ✅ **Loop 3:** CURRENT_FEATURE.md exists with F-3 (Concurrent Write Handling) in `tasks` phase. Feature IN PROGRESS → Skipping to Task 5.
+
 ### Task 3: Get Next Feature (By ID Order)
 
-- [x] **SKIPPED** - Current feature F-4 already exists (set in Task 2). No new feature selection needed.
-
-~~- [ ] **List all pending features and sort by ID**:~~
+- [x] **List all pending features and sort by ID**:
   ```bash
   # Get JSON output and sort by feature ID number
   specflow status --json | jq -r '.features[] | select(.status == "pending") | .id' | sort -t'-' -k2 -n | head -1
@@ -88,17 +89,17 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   This returns features in F-1, F-2, F-3... order (NOT by priority).
 
-~~- [ ] **Select the FIRST feature from the sorted list**:~~
+- [x] **Select the FIRST feature from the sorted list**:
 
   Record the feature ID (e.g., `F-2`) for the next task.
 
   **If no pending features exist:** Write "ALL_FEATURES_COMPLETE" to `.maestro/CURRENT_FEATURE.md` and exit playbook.
 
+  ✅ **Loop 3:** Skipped - F-3 already selected and in progress from previous loop.
+
 ### Task 4: Initialize Feature Context
 
-- [x] **SKIPPED** - Current feature F-4 already initialized with context file at `.maestro/CURRENT_FEATURE.md`.
-
-~~- [ ] **Check feature phase and initialize if needed**:~~
+- [x] **Check feature phase and initialize if needed**:
   ```bash
   specflow status <feature-id>
   ```
@@ -114,7 +115,7 @@ Select the next feature to implement and initialize it for the playbook workflow
   | `implement` | Feature in progress, proceed to Step 4 |
   | `complete` | Feature done, return to Task 3 for next |
 
-~~- [ ] **Write current feature to state file**:~~
+- [x] **Write current feature to state file**:
 
   Create/update `.maestro/CURRENT_FEATURE.md`:
   ```markdown
@@ -130,17 +131,11 @@ Select the next feature to implement and initialize it for the playbook workflow
   [Copy spec summary here if available]
   ```
 
+  ✅ **Loop 3:** Skipped - CURRENT_FEATURE.md already has F-3 context from previous loops. Feature is at T-1.2 (Lock acquisition and release).
+
 ### Task 5: Verify Feature Ready
 
 - [x] **Confirm feature is ready for playbook**:
-  ✅ **FEATURE READY** - F-4 (PII Scrubbing) verified:
-  - Status: `pending` (not complete)
-  - Phase: `specify` (has spec.md)
-  - Spec exists at: `.specify/specs/f-4-pii-scrubbing/spec.md`
-  - Dependencies: F-1, F-2 (both complete)
-
-  **Routing:** Phase `specify` → **Start at Step 1 (SPECIFY)**
-
   ```bash
   specflow status <feature-id>
   ```
@@ -152,6 +147,11 @@ Select the next feature to implement and initialize it for the playbook workflow
   - Phase `plan` → Start at Step 2 (PLAN)
   - Phase `tasks` → Start at Step 3 (TASKS)
   - Phase `implement` → Start at Step 4 (IMPLEMENT)
+
+  ✅ **Loop 3:** Verified F-3 is in `tasks` phase with 1/10 tasks complete.
+  - **Status:** F-3 is pending, phase `tasks`
+  - **Progress:** T-1.1 complete, T-1.2 next
+  - **Routing:** → Proceed to Step 4 (IMPLEMENT) for task T-1.2
 
 ## Output
 
