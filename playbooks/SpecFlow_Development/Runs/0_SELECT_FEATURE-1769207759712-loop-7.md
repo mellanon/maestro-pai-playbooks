@@ -28,7 +28,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 1: Initialize SpecFlow (Fresh Start Only)
 
-- [ ] **Check if SpecFlow is initialized**:
+- [x] **Check if SpecFlow is initialized**: ✅ SpecFlow already initialized (`.specflow/` directory exists with features.db). Skipping to Task 2.
   ```bash
   ls -la .specflow/ 2>/dev/null || ls -la .specify/ 2>/dev/null || echo "NOT_INITIALIZED"
   ```
@@ -58,7 +58,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 2: Check Current Feature State
 
-- [ ] **Read feature state file** (if exists):
+- [x] **Read feature state file** (if exists): ✅ Current feature F-11 (Vector Collector Service) already set, at phase `none`. Skipping to Task 5.
 
   Check if `.maestro/CURRENT_FEATURE.md` exists:
   ```bash
@@ -126,7 +126,8 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 5: Verify Feature Ready
 
-- [ ] **Confirm feature is ready for playbook**:
+- [x] **Confirm feature is ready for playbook**: ✅ F-11 (Vector Collector Service) verified as pending with phase `none`. 16 features total: 12 complete, 4 pending. F-11 is ready to proceed to Step 1 (SPECIFY).
+
   ```bash
   specflow status <feature-id>
   ```
@@ -134,7 +135,7 @@ Select the next feature to implement and initialize it for the playbook workflow
   **Required state:** Feature exists and is not `complete`.
 
   Record current phase for routing:
-  - Phase `none` or `specify` → Start at Step 1 (SPECIFY)
+  - Phase `none` or `specify` → Start at Step 1 (SPECIFY) ← **F-11 is here**
   - Phase `plan` → Start at Step 2 (PLAN)
   - Phase `tasks` → Start at Step 3 (TASKS)
   - Phase `implement` → Start at Step 4 (IMPLEMENT)
