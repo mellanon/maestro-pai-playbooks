@@ -263,7 +263,7 @@ Before creating PR, verify no sensitive data is included.
 
 ### 8. Create File Inventory
 
-- [x] **List files for PR** in `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/FILE_INVENTORY.md`:
+- [x] **List files for PR** in `{{AUTORUN_FOLDER}}/outputs/FILE_INVENTORY.md`:
 
   **Completed (2026-01-23) - Signal-2:**
   Created comprehensive FILE_INVENTORY.md containing:
@@ -298,7 +298,7 @@ Before creating PR, verify no sensitive data is included.
   ```
 
   If more features:
-  - Document completion in `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/COMPLETION.md`
+  - Document completion in `{{AUTORUN_FOLDER}}/outputs/COMPLETION.md`
   - Optionally continue with next feature
 
   **Completed (2026-01-23) - Signal-1:**
@@ -317,8 +317,8 @@ Before creating PR, verify no sensitive data is included.
 
 - Feature marked complete in database
 - `CHANGELOG.md` updated with feature entry
-- `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/FILE_INVENTORY.md` with PR file list
-- `/Users/andreas/Developer/maestro-pai-playbooks/playbooks/SpecFlow_Development/COMPLETION.md` summary
+- `{{AUTORUN_FOLDER}}/outputs/FILE_INVENTORY.md` with PR file list
+- `{{AUTORUN_FOLDER}}/outputs/COMPLETION.md` summary
 
 ## Human Gate
 
@@ -366,9 +366,120 @@ This provides a comprehensive pre-merge review validating against:
 - `docs/TDD-EVALS.md` - Test quality
 - `docs/RELEASE-FRAMEWORK.md` - Release checklist
 
-## Playbook Complete
+## Feature Loop: Initialize Next Feature
 
-Feature development cycle finished. Options:
-1. Return to Step 1 for next feature
-2. Run PR_Review playbook for self-review
-3. End session
+After completing a feature, the playbook MUST check for and initialize the next feature.
+
+### 10. Clear Current Feature State
+
+- [x] **Archive completed feature context**:
+
+  Move current feature file to completed archive:
+  ```bash
+  mv {{AUTORUN_FOLDER}}/CURRENT_FEATURE.md {{AUTORUN_FOLDER}}/outputs/COMPLETED_FEATURES/FEATURE_<id>_2026-01-23.md
+  ```
+
+  If `COMPLETED_FEATURES/` doesn't exist, create it:
+  ```bash
+  mkdir -p {{AUTORUN_FOLDER}}/outputs/COMPLETED_FEATURES
+  ```
+
+  **Completed (2026-01-23) - Signal-1:**
+  - Created `COMPLETED_FEATURES/` directory
+  - Archived F-1 completion context to `COMPLETED_FEATURES/FEATURE_F-1_2026-01-23.md`
+  - CURRENT_FEATURE.md already contained F-2 from previous agent transition
+
+### 11. Check for Next Feature
+
+- [ ] **List remaining pending features (by ID order)**:
+  ```bash
+  # Get next pending feature by ID order (not priority)
+  NEXT_FEATURE=$(specflow status --json | jq -r '.features[] | select(.status == "pending") | .id' | sort -t'-' -k2 -n | head -1)
+  echo "Next feature: $NEXT_FEATURE"
+  ```
+
+  **If features remain** (NEXT_FEATURE is not empty):
+  - Record the feature ID (e.g., F-2, F-3, etc.)
+  - Proceed to Task 12
+
+  **If NO features remain** (NEXT_FEATURE is empty):
+  - Write to `{{AUTORUN_FOLDER}}/CURRENT_FEATURE.md`:
+    ```markdown
+    # Current Feature
+    ALL_FEATURES_COMPLETE
+
+    All features have been implemented. Playbook complete.
+    Date: 2026-01-23
+    ```
+  - Exit playbook (do NOT loop)
+
+### 12. Initialize Next Feature
+
+- [ ] **Create new CURRENT_FEATURE.md for next feature**:
+
+  Write to `{{AUTORUN_FOLDER}}/CURRENT_FEATURE.md`:
+  ```markdown
+  # Current Feature
+
+  - **Feature ID:** <next-feature-id>
+  - **Feature Name:** <feature-name>
+  - **Started:** 2026-01-23
+  - **Phase:** none
+
+  ## Notes
+
+  Auto-selected as next feature in ID sequence after completing previous feature.
+  ```
+
+- [ ] **Check if feature needs spec initialization**:
+  ```bash
+  specflow status <next-feature-id>
+  ```
+
+  If phase is `none`, run:
+  ```bash
+  specflow specify <next-feature-id>
+  ```
+
+### 13. Reset Playbook for Next Feature
+
+- [ ] **Clear loop artifacts from previous feature**:
+
+  Remove old loop files (keep COMPLETED_FEATURES archive):
+  ```bash
+  rm -f {{AUTORUN_FOLDER}}/outputs/LOOP_*_PROGRESS.md
+  rm -f {{AUTORUN_FOLDER}}/outputs/LOOP_*_TEST_RESULTS.md
+  rm -f {{AUTORUN_FOLDER}}/outputs/FILE_INVENTORY.md
+  rm -f {{AUTORUN_FOLDER}}/outputs/COMPLETION.md
+  ```
+
+- [ ] **Log feature transition**:
+
+  Append to `{{AUTORUN_FOLDER}}/outputs/PLAYBOOK_LOG.md`:
+  ```markdown
+  ## Feature Transition - 2026-01-23
+
+  - **Completed:** <previous-feature-id> - <previous-feature-name>
+  - **Starting:** <next-feature-id> - <next-feature-name>
+  - **Transition Time:** [timestamp]
+  ```
+
+## Loop Control
+
+After completing Tasks 10-13, the playbook loops back to **Step 0 (SELECT_FEATURE)** to begin the next feature cycle.
+
+**Loop continues until:**
+- All features are complete (`specflow list --status pending` returns empty)
+- Max loops reached (configurable in Maestro)
+- Manual stop by user
+
+---
+
+## Playbook Complete (Final Exit)
+
+The playbook only exits when `CURRENT_FEATURE.md` contains `ALL_FEATURES_COMPLETE`.
+
+At that point:
+1. All features have been implemented
+2. PR_Review playbook can be run for final review
+3. Session ends
