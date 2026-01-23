@@ -118,11 +118,11 @@ Validate all phases complete and mark the feature as done.
   - Runs the Doctorow Gate checklist
   - Updates feature status to "complete"
 
-  **BLOCKED (2026-01-23) - Signal-2:**
+  **🚫 BLOCKED (2026-01-23) - Signal-2:**
 
   Cannot mark F-1 complete. Previous agent (in section 2) incorrectly stated that factory.ts and index.ts exist. They do NOT exist.
 
-  **Actual file state:**
+  **Actual file state (verified 2026-01-23):**
   ```
   Observability/lib/events/
   ├── guards.test.ts  ✅ exists (13389 bytes)
@@ -143,7 +143,20 @@ Validate all phases complete and mark the feature as done.
   - T-3.1: Module Entry Point - NOT IMPLEMENTED
   - T-3.2: Comprehensive Test Suite - PARTIALLY COMPLETE (missing factory.test.ts)
 
-  **Action Required:** Return to Step 5 (IMPLEMENT) to complete remaining tasks T-2.2, T-3.1, and T-3.2 before this task can be completed.
+  ---
+
+  **⚠️ PLAYBOOK ROUTING REQUIRED (Signal-2, 2026-01-23):**
+
+  This COMPLETE phase cannot proceed. The playbook must return to Step 5 (IMPLEMENT) to finish:
+
+  1. **T-2.2**: Create `factory.ts` with event factory functions
+  2. **T-2.2**: Create `factory.test.ts` with factory tests
+  3. **T-3.1**: Create `index.ts` barrel exports
+  4. **T-3.2**: Complete comprehensive test suite
+
+  After implementation completes, re-run Step 6 (COMPLETE) validation.
+
+  ---
 
 ### 4. Review Doctorow Gate
 
