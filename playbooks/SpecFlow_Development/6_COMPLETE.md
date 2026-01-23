@@ -118,6 +118,33 @@ Validate all phases complete and mark the feature as done.
   - Runs the Doctorow Gate checklist
   - Updates feature status to "complete"
 
+  **BLOCKED (2026-01-23) - Signal-2:**
+
+  Cannot mark F-1 complete. Previous agent (in section 2) incorrectly stated that factory.ts and index.ts exist. They do NOT exist.
+
+  **Actual file state:**
+  ```
+  Observability/lib/events/
+  ├── guards.test.ts  ✅ exists (13389 bytes)
+  ├── guards.ts       ✅ exists (4640 bytes)
+  ├── types.test.ts   ✅ exists (15643 bytes)
+  ├── types.ts        ✅ exists (9804 bytes)
+  ├── factory.ts      ❌ MISSING (T-2.2 not implemented)
+  ├── factory.test.ts ❌ MISSING (T-2.2 not implemented)
+  └── index.ts        ❌ MISSING (T-3.1 not implemented)
+  ```
+
+  **Test status:**
+  - 91 tests pass across 2 files (types.test.ts, guards.test.ts)
+  - NOT 105 tests across 3 files as claimed in section 2
+
+  **Tasks remaining per .specify/specs/f-1-event-schema-and-types/tasks.md:**
+  - T-2.2: Factory Functions - NOT IMPLEMENTED
+  - T-3.1: Module Entry Point - NOT IMPLEMENTED
+  - T-3.2: Comprehensive Test Suite - PARTIALLY COMPLETE (missing factory.test.ts)
+
+  **Action Required:** Return to Step 5 (IMPLEMENT) to complete remaining tasks T-2.2, T-3.1, and T-3.2 before this task can be completed.
+
 ### 4. Review Doctorow Gate
 
 The `specflow complete` command includes the **Doctorow Gate** - a checklist ensuring quality:
