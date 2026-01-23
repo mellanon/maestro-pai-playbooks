@@ -52,7 +52,7 @@ Implement the next task using TDD (Test-Driven Development).
   ```markdown
   ## Task: [task name]
   ### Tests Written
-  - [ ] test_xxx: [description]
+  * test_xxx: [description]
   ```
 
 ### 3. TDD Cycle: GREEN
