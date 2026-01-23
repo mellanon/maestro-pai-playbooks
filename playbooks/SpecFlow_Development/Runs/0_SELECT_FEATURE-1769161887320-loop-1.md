@@ -58,7 +58,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 2: Check Current Feature State
 
-- [ ] **Read feature state file** (if exists):
+- [x] **Read feature state file** (if exists): ✅ NO_CURRENT_FEATURE - proceeding to Task 3
 
   Check if `.maestro/CURRENT_FEATURE.md` exists:
   ```bash
@@ -71,73 +71,44 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 3: Get Next Feature (By ID Order)
 
-- [ ] **List all pending features and sort by ID**:
-  ```bash
-  # Get JSON output and sort by feature ID number
-  specflow status --json | jq -r '.features[] | select(.status == "pending") | .id' | sort -t'-' -k2 -n | head -1
-  ```
+- [x] **List all pending features and sort by ID**: ✅ Queried `.specflow/features.db` directly (specflow CLI not available)
 
-  **Alternative (human-readable):**
-  ```bash
-  specflow status --json | jq -r '.features[] | select(.status == "pending") | "\(.id)\t\(.name)"' | sort -t'-' -k2 -n
-  ```
+  Pending features sorted by ID:
+  - F-2: Event Logging Library (phase: specify)
+  - F-3: Concurrent Write Handling (phase: none)
+  - F-4: PII Scrubbing (phase: none)
+  - F-5 through F-15: Various features (phase: none)
 
-  This returns features in F-1, F-2, F-3... order (NOT by priority).
-
-- [ ] **Select the FIRST feature from the sorted list**:
-
-  Record the feature ID (e.g., `F-2`) for the next task.
+- [x] **Select the FIRST feature from the sorted list**: ✅ Selected **F-2 Event Logging Library**
 
   **If no pending features exist:** Write "ALL_FEATURES_COMPLETE" to `.maestro/CURRENT_FEATURE.md` and exit playbook.
 
 ### Task 4: Initialize Feature Context
 
-- [ ] **Check feature phase and initialize if needed**:
-  ```bash
-  specflow status <feature-id>
-  ```
+- [x] **Check feature phase and initialize if needed**: ✅ F-2 is in phase `specify` - has spec, proceed to Step 1
 
   Based on the current phase:
 
   | Current Phase | Action |
   |---------------|--------|
   | `none` | Run `specflow specify <feature-id>` to start |
-  | `specify` | Feature has spec, proceed to Step 1 |
+  | **`specify`** | **Feature has spec, proceed to Step 1** ← F-2 is here |
   | `plan` | Feature has plan, proceed to Step 2 |
   | `tasks` | Feature has tasks, proceed to Step 3 |
   | `implement` | Feature in progress, proceed to Step 4 |
   | `complete` | Feature done, return to Task 3 for next |
 
-- [ ] **Write current feature to state file**:
-
-  Create/update `.maestro/CURRENT_FEATURE.md`:
-  ```markdown
-  # Current Feature
-
-  - **Feature ID:** <feature-id>
-  - **Feature Name:** <feature-name>
-  - **Started:** <date>
-  - **Phase:** <current-phase>
-
-  ## Feature Details
-
-  [Copy spec summary here if available]
-  ```
+- [x] **Write current feature to state file**: ✅ Created `.maestro/CURRENT_FEATURE.md` with F-2 context
 
 ### Task 5: Verify Feature Ready
 
-- [ ] **Confirm feature is ready for playbook**:
-  ```bash
-  specflow status <feature-id>
-  ```
+- [x] **Confirm feature is ready for playbook**: ✅ F-2 verified ready
 
-  **Required state:** Feature exists and is not `complete`.
+  **Feature:** F-2 Event Logging Library
+  **Status:** pending (not complete)
+  **Phase:** specify
 
-  Record current phase for routing:
-  - Phase `none` or `specify` → Start at Step 1 (SPECIFY)
-  - Phase `plan` → Start at Step 2 (PLAN)
-  - Phase `tasks` → Start at Step 3 (TASKS)
-  - Phase `implement` → Start at Step 4 (IMPLEMENT)
+  **Routing Decision:** Phase `specify` → **Start at Step 1 (SPECIFY)**
 
 ## Output
 
