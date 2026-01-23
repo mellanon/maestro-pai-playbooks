@@ -1,6 +1,6 @@
 ---
 generation_date: 2026-01-22 14:45
-updated: 2026-01-23 14:00
+updated: 2026-01-23 15:00
 tags:
   - type/requirements
   - para/project
@@ -15,53 +15,54 @@ source: research-session
 codename: Signal
 ---
 
-# PAI Signal Stack — Cross-Session Observability
+# PAI Signal Architecture
 
-> *Codename: **Signal** — The complete observability pipeline from JSONL events through to dashboards and alerting.*
+> *Codename: **Signal** — Advanced observability stack built on existing JSONL infrastructure.*
 
 ---
 
 ## Relationship to PAI Observability Server
 
-> **Important:** The PAI Signal Stack starts at JSONL Events and includes everything onward (Vector collector, VictoriaMetrics/Logs/Traces, Grafana). The existing PAI Observability server is a lightweight consumer of the same events.
+> **Important:** The PAI Observability Server (basic, out of box) reads JSONL Events directly. The PAI Signal Stack is a separate, more advanced pipeline using Vector Collector to feed pluggable backends.
 
 | System | PAI Observability Server | PAI Signal Stack (This Spec) |
 |--------|--------------------------|------------------------------|
+| **Fed From** | Direct read from JSONL Events | Vector Collector |
 | **Focus** | Current session visibility | Cross-session analysis & alerting |
 | **Analogy** | Browser DevTools | Datadog/Grafana |
 | **Scope** | Single PAI instance | Multi-system (PAI + home automation + off-grid) |
 | **Storage** | In-memory (1000 events) | Persistent (weeks/months) |
 | **Use Case** | "What's happening now?" | "What patterns emerge over time?" |
-| **Latency** | Near real-time | Near real-time |
+| **Complexity** | Basic, out of box | Advanced, pluggable backends |
 
 ### How They Work Together
 
 ```
-Claude Code Hooks
-       │
-       ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│  PAI SIGNAL STACK                                                   │
-│  ════════════════                                                   │
-│                                                                     │
-│   JSONL Events ─────┬────► PAI Observability Server                 │
-│                     │      (in-memory, current session)             │
-│                     │                                               │
-│                     └────► Vector Collector ────► VictoriaMetrics   │
-│                                                   VictoriaLogs      │
-│                                                   VictoriaTraces    │
-│                                                         │           │
-│                                                         ▼           │
-│                                                     Grafana         │
-│                                                   (dashboards)      │
-└─────────────────────────────────────────────────────────────────────┘
+Event Sources ──► JSONL Events
+                       │
+                       ├────► PAI Observability Server (direct read)
+                       │      (basic, out of box, current session)
+                       │
+                       ▼
+              ┌─────────────────────────────────────────┐
+              │  PAI SIGNAL STACK                       │
+              │                                         │
+              │  Vector Collector                       │
+              │        │                                │
+              │        ▼                                │
+              │  Observability Stack (pluggable)        │
+              │  • VictoriaMetrics / LGTM / Cloud       │
+              │        │                                │
+              │        ▼                                │
+              │     Grafana (dashboards + alerting)     │
+              └─────────────────────────────────────────┘
 ```
 
 **Both paths are near real-time.** The hooks write JSONL files that:
-1. PAI Observability reads for WebSocket streaming (current session)
-2. Vector collector tails for forwarding to persistent storage (cross-session)
+1. PAI Observability Server reads directly (basic current session visibility)
+2. Vector Collector tails and transforms for the Signal Stack (advanced cross-session analysis)
 
-The difference is **scope**, not timing. PAI Observability shows what's happening *now* in a single session. The Signal Stack aggregates across sessions and systems for pattern analysis and alerting.
+**Open question:** JSONL format may need enhancement for Signal Stack requirements (richer metadata, correlation IDs, etc.).
 
 ---
 
@@ -83,9 +84,9 @@ Based on AWS Bedrock Agent Core patterns, here are the foundational capabilities
 
 ## Executive Summary
 
-**What:** The PAI Signal Stack is the complete observability pipeline—from JSONL events through Vector collection to VictoriaMetrics storage and Grafana dashboards. Both the existing PAI Observability server and the persistent backends consume from the same event stream in near real-time.
+**What:** The PAI Signal Stack is an advanced observability pipeline—Vector Collector consuming JSONL Events and forwarding to pluggable backends (VictoriaMetrics, Grafana LGTM, or cloud services). It complements the basic PAI Observability Server which reads JSONL directly.
 
-**Why:** PAI agents run autonomously—you need to know what's happening, what's failing, and what it costs. Current session visibility (PAI Observability) plus cross-session analysis (Signal Stack) gives you both perspectives.
+**Why:** PAI agents run autonomously—you need to know what's happening, what's failing, and what it costs. The basic Observability Server gives you current session visibility. The Signal Stack adds cross-session analysis, alerting, and multi-system aggregation.
 
 **How:** Three-layer architecture (from nothing to full stack):
 
@@ -117,9 +118,9 @@ open http://localhost:3000
 
 ## Architecture Diagram
 
-![PAI Signal Stack Architecture](assets/pai-observability-architecture-v3.png)
+![PAI Signal Architecture](assets/pai-signal-architecture-v5.png)
 
-*The PAI Signal Stack: JSONL events flow in near real-time to both the PAI Observability server (current session, like DevTools) and the persistent backend (cross-session analysis, like Datadog). Same events, different scopes.*
+*PAI Signal Architecture: JSONL Events feed both the basic PAI Observability Server (direct read, current session) and the PAI Signal Stack (Vector Collector → pluggable Observability Stack for cross-session analysis).*
 
 ---
 
