@@ -391,12 +391,39 @@ After completing a feature, the playbook MUST check for and initialize the next 
 
 ### 11. Check for Next Feature
 
-- [ ] **List remaining pending features (by ID order)**:
+- [x] **List remaining pending features (by ID order)**:
   ```bash
   # Get next pending feature by ID order (not priority)
   NEXT_FEATURE=$(specflow status --json | jq -r '.features[] | select(.status == "pending") | .id' | sort -t'-' -k2 -n | head -1)
   echo "Next feature: $NEXT_FEATURE"
   ```
+
+  **Completed (2026-01-23) - Signal-1:**
+
+  Ran `specflow status` from worktree root to list all features:
+  - 14 features remain pending
+  - Next feature by ID order: **F-2: Event Logging Library**
+
+  ```
+  Features by ID:
+  F-1     ● complete    (done)
+  F-2     ○ pending     ← NEXT (Event Logging Library)
+  F-3     ○ pending     (Concurrent Write Handling)
+  F-4     ○ pending     (PII Scrubbing)
+  F-5     ○ pending     (SessionStart Hook Instrumentation)
+  F-6     ○ pending     (SessionStop Hook Instrumentation)
+  F-7     ○ pending     (PreToolUse Hook Instrumentation)
+  F-8     ○ pending     (PostToolUse Hook Instrumentation)
+  F-9     ○ pending     (Hook Timing Instrumentation)
+  F-10    ○ pending     (CLI Query Patterns)
+  F-11    ○ pending     (Collector Script)
+  F-12    ○ pending     (Collector launchd Plist)
+  F-13    ○ pending     (Watchdog Script)
+  F-14    ○ pending     (Log Rotation Script)
+  F-15    ○ pending     (Docker Compose Stack)
+  ```
+
+  **Features remain** - proceeding to Task 12.
 
   **If features remain** (NEXT_FEATURE is not empty):
   - Record the feature ID (e.g., F-2, F-3, etc.)
