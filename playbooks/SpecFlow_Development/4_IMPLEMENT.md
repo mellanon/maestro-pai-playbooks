@@ -91,6 +91,33 @@ Implement the next task using TDD (Test-Driven Development).
 - New/modified test files
 - `.maestro/outputs/LOOP_PROGRESS.md` updated
 
+---
+
+## ⚠️ SKIP VALIDATION GATE (SMS-452)
+
+**DO NOT skip features without using the validated skip command.**
+
+If you believe a feature is a duplicate or should be skipped:
+
+1. **STOP** - Do not silently mark as skipped
+2. **Use validated skip**:
+   ```bash
+   specflow skip <feature-id> \
+     --reason <duplicate|deferred|blocked|out_of_scope|superseded> \
+     --justification "Detailed explanation" \
+     --duplicate-of <id>  # Required if reason=duplicate
+   ```
+
+3. **Duplicate validation**:
+   - Target feature must exist and be complete/in_progress
+   - Skip will FAIL if validation fails
+   - This prevents incorrect "duplicate" judgments
+
+**Background:** F-12 was incorrectly skipped as "duplicate of F-11" but they were
+distinct features (service vs config). See RCA SMS-452.
+
+---
+
 ## Next
 
 → Proceed to Step 5 (VERIFY) to check progress and loop control

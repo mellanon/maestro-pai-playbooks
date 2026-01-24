@@ -90,6 +90,51 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   **If no pending features exist:** Write "ALL_FEATURES_COMPLETE" to `.maestro/CURRENT_FEATURE.md` and exit playbook.
 
+---
+
+## ⚠️ SKIP VALIDATION GATE (SMS-452)
+
+**CRITICAL: Agents MUST NOT skip features without explicit validation.**
+
+If during ANY phase you determine a feature should be skipped:
+
+1. **STOP** - Do not mark as skipped without validation
+2. **Use the validated skip command**:
+   ```bash
+   specflow skip <feature-id> \
+     --reason <duplicate|deferred|blocked|out_of_scope|superseded> \
+     --justification "Detailed explanation of why" \
+     --duplicate-of <other-feature-id>  # Required if reason=duplicate
+   ```
+
+3. **Validation rules for duplicate claims**:
+   - The `--duplicate-of` feature MUST exist
+   - The `--duplicate-of` feature MUST be complete or in_progress
+   - If validation fails, you CANNOT skip as duplicate
+
+4. **Example (valid skip)**:
+   ```bash
+   specflow skip F-12 --reason deferred \
+     --justification "Deferring to v2.0 milestone per stakeholder decision"
+   ```
+
+5. **Example (duplicate - will be validated)**:
+   ```bash
+   specflow skip F-12 --reason duplicate --duplicate-of F-11 \
+     --justification "F-11 already implements the same configuration"
+   ```
+   This will FAIL if F-11 doesn't actually cover F-12's deliverables.
+
+**Background:** RCA SMS-452 identified that F-12 (Vector Configuration) was incorrectly
+skipped as "duplicate of F-11" (Vector Collector Service). These were distinct features:
+- F-11 creates docker-compose.yml service entry
+- F-12 creates vector.toml configuration file
+
+The skip validation gate prevents similar errors by requiring explicit justification
+and validating duplicate claims against actual feature status.
+
+---
+
 ### Task 4: Initialize Feature Context
 
 - [ ] **Check feature phase and initialize if needed**:
