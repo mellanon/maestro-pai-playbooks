@@ -3027,4 +3027,180 @@ ENDPOINT="http://ec2-xx-xx-xx-xx.compute.amazonaws.com:9428/insert/jsonline"
 
 ---
 
+## New Features
+
+This section contains features that extend beyond the initial implementation scope (F-1 through F-16). These are tracked in SpecFlow and can be implemented via the Maestro playbook workflow.
+
+---
+
+### F-017: OTLP Hook Instrumentation
+
+**Status:** Pending | **Priority:** High | **Dependencies:** F-1 (Event Schema), F-5/F-6/F-7/F-8 (Hook Instrumentation)
+
+#### Overview
+
+Add OpenTelemetry Protocol (OTLP) tracing to hooks for distributed trace visualization in VictoriaTraces. This enables viewing PAI sessions as hierarchical trace trees with span relationships, complementing the existing JSONL log-based event stream.
+
+#### Rationale
+
+From the "Why Not OpenTelemetry" section (line 1536):
+> *"PAI can become complex—multiple parallel agents, background processes, CLI tools, and external API calls all executing concurrently. This IS distributed tracing territory. As PAI complexity grows, OTLP instrumentation may become valuable for correlating spans across agents."*
+
+The initial implementation chose direct HTTP ingestion for simplicity. Now that the stack is stable (F-1 through F-16 complete), adding OTLP instrumentation unlocks:
+
+1. **Trace waterfall views** — See session → tool → agent → sub-agent hierarchies visually
+2. **Span correlation** — Automatic parent-child relationships across process boundaries
+3. **Standard tooling** — Use any OTLP-compatible observability tool
+
+#### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    DUAL-PATH OBSERVABILITY                                   │
+│                                                                              │
+│   Hook Execution                                                             │
+│        │                                                                     │
+│        ├────────────────────────────┬────────────────────────────┐          │
+│        │                            │                            │          │
+│        ▼                            ▼                            ▼          │
+│   logEvent()                   OTel SDK                     Correlation     │
+│   (existing)                   (new)                        IDs (new)       │
+│        │                            │                            │          │
+│        │                            │                            │          │
+│   ┌────┴────┐                  ┌────┴────┐                  ┌────┴────┐    │
+│   │  JSONL  │                  │  OTLP   │                  │ Shared  │    │
+│   │  File   │                  │  gRPC   │                  │ Context │    │
+│   └────┬────┘                  └────┬────┘                  └─────────┘    │
+│        │                            │                                       │
+│        ▼                            ▼                                       │
+│   ┌─────────┐                  ┌─────────────┐                              │
+│   │ Vector  │                  │VictoriaTrace│                              │
+│   └────┬────┘                  │  :4317 OTLP │                              │
+│        │                       └─────────────┘                              │
+│        ▼                                                                    │
+│   ┌─────────────┐                                                           │
+│   │VictoriaLogs │                                                           │
+│   │  :9428      │                                                           │
+│   └─────────────┘                                                           │
+│                                                                              │
+│   LOGS (searchable events)  +  TRACES (visual hierarchy)  =  FULL PICTURE  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### Deliverables
+
+**D1: Extended Event Schema**
+
+Add trace correlation fields to `PAIEvent`:
+
+```typescript
+interface PAIEvent {
+  // Existing fields...
+  ts: number;
+  event_type: string;
+  source: string;
+  session_id?: string;
+  agent_id?: string;
+  parent_agent_id?: string;
+  data?: Record<string, any>;
+  error?: PAIEventError;
+
+  // NEW: OpenTelemetry correlation
+  trace_id?: string;        // 32-char hex, shared across session
+  span_id?: string;         // 16-char hex, unique per event
+  parent_span_id?: string;  // Links to parent span (e.g., tool → agent)
+}
+```
+
+**D2: OTel SDK Integration**
+
+Create `lib/tracing/` module:
+
+```typescript
+// lib/tracing/index.ts
+import { trace, SpanKind, context } from '@opentelemetry/api';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+
+export interface TraceContext {
+  traceId: string;
+  spanId: string;
+  parentSpanId?: string;
+}
+
+export function startSpan(name: string, kind: SpanKind): TraceContext;
+export function endSpan(ctx: TraceContext, status?: 'ok' | 'error'): void;
+export function getTraceContext(): TraceContext | undefined;
+export function propagateContext(taskPrompt: string): string;
+```
+
+**D3: Hook Instrumentation Updates**
+
+Update hooks to create spans:
+
+| Hook | Span Name | Span Kind | Parent |
+|------|-----------|-----------|--------|
+| SessionStart | `session.{session_id}` | SERVER | None (root) |
+| PreToolUse | `tool.{tool_name}` | INTERNAL | Session span |
+| PostToolUse | (ends span) | — | — |
+| SubagentStart | `agent.{agent_id}` | INTERNAL | Session/Parent agent |
+| SubagentStop | (ends span) | — | — |
+| SessionStop | (ends span) | — | — |
+
+**D4: Context Propagation**
+
+Pass trace context to child agents via Task tool prompt injection:
+
+```
+[TRACE_CONTEXT: trace_id=abc123... parent_span_id=def456...]
+```
+
+Child agents extract this and continue the trace.
+
+**D5: VictoriaTraces Configuration**
+
+Update `docker-compose.yml` to expose OTLP port:
+
+```yaml
+victoriatraces:
+  ports:
+    - "127.0.0.1:10428:10428"  # Jaeger API (existing)
+    - "127.0.0.1:4317:4317"    # OTLP gRPC (new)
+    - "127.0.0.1:4318:4318"    # OTLP HTTP (new)
+  command:
+    - "--storageDataPath=/victoria-traces-data"
+    - "--httpListenAddr=:10428"
+    - "--otlp.grpc.listenAddr=:4317"
+    - "--otlp.http.listenAddr=:4318"
+```
+
+#### Acceptance Criteria
+
+| ID | Criterion | Verification |
+|----|-----------|--------------|
+| AC-1 | SessionStart creates root span with trace_id | Check VictoriaTraces for span |
+| AC-2 | Tool calls create child spans under session | Trace waterfall shows hierarchy |
+| AC-3 | Spawned agents create child spans | Parent-child relationship visible |
+| AC-4 | Trace context propagates across agent boundaries | Child agent spans link to parent |
+| AC-5 | JSONL events include trace_id/span_id | grep confirms fields present |
+| AC-6 | Logs and traces correlate via shared IDs | Jump from log → trace works |
+
+#### Dependencies
+
+- **Requires:** @opentelemetry/api, @opentelemetry/sdk-node, @opentelemetry/exporter-trace-otlp-grpc
+- **Docker:** VictoriaTraces must expose OTLP ports (4317/4318)
+
+#### Testing Strategy
+
+1. **Unit tests:** Span creation, context extraction, ID generation
+2. **Integration tests:** End-to-end trace appears in VictoriaTraces
+3. **Acceptance tests:** L4+ with trace visualization verification
+
+#### Out of Scope
+
+- Automatic HTTP/fetch instrumentation (future feature)
+- Metrics via OTel (continue using Prometheus push)
+- Baggage/context values beyond trace IDs
+
+---
+
 *PAI Observability Requirements - Simplified, file-based, PAI-first design. January 2026.*
