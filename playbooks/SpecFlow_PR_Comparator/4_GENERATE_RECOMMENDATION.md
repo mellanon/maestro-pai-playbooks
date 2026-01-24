@@ -186,7 +186,7 @@ bun test
 
 ### Immediate
 
-- [ ] Merge PR #[N] to develop
+- [ ] Merge PR #[N] to $TARGET_BRANCH
 - [ ] Cherry-pick [N] commits (if applicable)
 - [ ] Run full test suite
 - [ ] Close remaining PRs with note

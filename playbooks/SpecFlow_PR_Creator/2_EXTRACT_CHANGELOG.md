@@ -70,7 +70,7 @@ For each completed feature:
 
 Generated: {{DATE}}
 Branch: [current branch]
-Target: develop
+Target: $TARGET_BRANCH
 
 ---
 

@@ -10,7 +10,7 @@
 
 ## Purpose
 
-Analyze the differences between this feature branch and the target branch (develop). Categorize changes, identify potential conflicts, and highlight anything that needs special attention during merge.
+Analyze the differences between this feature branch and the target branch ($TARGET_BRANCH). Categorize changes, identify potential conflicts, and highlight anything that needs special attention during merge.
 
 ## Prerequisites
 
@@ -23,17 +23,17 @@ Analyze the differences between this feature branch and the target branch (devel
 
 - [ ] **Get overall diff stats**:
   ```bash
-  git diff --stat develop...HEAD
+  git diff --stat $TARGET_BRANCH...HEAD
   ```
 
 - [ ] **Count changes by type**:
   ```bash
-  git diff --numstat develop...HEAD | awk '{added+=$1; removed+=$2} END {print "Added:", added, "Removed:", removed}'
+  git diff --numstat $TARGET_BRANCH...HEAD | awk '{added+=$1; removed+=$2} END {print "Added:", added, "Removed:", removed}'
   ```
 
 - [ ] **List all changed files**:
   ```bash
-  git diff --name-status develop...HEAD
+  git diff --name-status $TARGET_BRANCH...HEAD
   ```
 
 ### Task 2: Categorize Changes
@@ -55,8 +55,8 @@ Analyze the differences between this feature branch and the target branch (devel
 
 - [ ] **Attempt merge dry-run**:
   ```bash
-  git fetch origin develop
-  git merge-tree $(git merge-base HEAD origin/develop) origin/develop HEAD
+  git fetch origin $TARGET_BRANCH
+  git merge-tree $(git merge-base HEAD origin/$TARGET_BRANCH) origin/$TARGET_BRANCH HEAD
   ```
 
 - [ ] **Identify conflict-prone files**:
@@ -80,7 +80,7 @@ Analyze the differences between this feature branch and the target branch (devel
 - [ ] **Write BRANCH_COMPARISON.md**: Create `{{AUTORUN_FOLDER}}/BRANCH_COMPARISON.md`:
 
 ```markdown
-# Branch Comparison: [feature-branch] → develop
+# Branch Comparison: [feature-branch] → $TARGET_BRANCH
 
 Generated: {{DATE}}
 Agent: {{AGENT_NAME}}
@@ -179,7 +179,7 @@ OR
 ## Commit History
 
 ```
-[output of git log --oneline develop..HEAD]
+[output of git log --oneline $TARGET_BRANCH..HEAD]
 ```
 
 ---

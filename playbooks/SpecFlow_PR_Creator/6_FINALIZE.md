@@ -54,7 +54,7 @@ Create the machine-readable PR manifest for the comparator agent and document th
 
 - [ ] **Get git statistics**:
   ```bash
-  git diff --stat develop...HEAD | tail -1
+  git diff --stat $TARGET_BRANCH...HEAD | tail -1
   ```
 
 ### Task 3: Create PR Manifest
@@ -73,7 +73,7 @@ Create the machine-readable PR manifest for the comparator agent and document th
     "number": null,
     "url": null,
     "title": "[Pending - run PR_COMMAND.sh to create]",
-    "baseBranch": "develop",
+    "baseBranch": "$TARGET_BRANCH",
     "headBranch": "[current branch]",
     "state": "pending_creation"
   },
@@ -131,7 +131,7 @@ Create the machine-readable PR manifest for the comparator agent and document th
   "number": [from PR_INFO.json],
   "url": "[from PR_INFO.json]",
   "title": "[from gh pr view]",
-  "baseBranch": "develop",
+  "baseBranch": "$TARGET_BRANCH",
   "headBranch": "[branch]",
   "state": "open"
 },
@@ -158,7 +158,7 @@ Create the machine-readable PR manifest for the comparator agent and document th
 - **PR #**: [number]
 - **URL**: [url]
 - **Title**: [title]
-- **Base**: develop
+- **Base**: $TARGET_BRANCH
 - **Head**: [branch]
 
 ### If PR Not Yet Created:
@@ -230,7 +230,7 @@ Key comparison points:
 ### If PR Created:
 1. Human or comparator agent reviews this PR
 2. If multiple agents, compare PR manifests
-3. Merge best solution(s) to develop
+3. Merge best solution(s) to $TARGET_BRANCH
 4. Follow INSTALLATION_GUIDE.md for deployment
 
 ---

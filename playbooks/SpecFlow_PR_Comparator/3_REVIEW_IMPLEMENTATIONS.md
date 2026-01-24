@@ -24,7 +24,15 @@ Perform qualitative code review of each PR to identify unique approaches, streng
 
 - [ ] **Find merge base**:
   ```bash
-  git merge-base develop HEAD
+  # Use auto-detected target branch
+  if [[ -f .maestro/TARGET_BRANCH ]]; then
+      TARGET_BRANCH=$(cat .maestro/TARGET_BRANCH)
+  elif git rev-parse --verify develop >/dev/null 2>&1; then
+      TARGET_BRANCH="develop"
+  else
+      TARGET_BRANCH="main"
+  fi
+  git merge-base $TARGET_BRANCH HEAD
   ```
 
 ### Task 2: Review Each PR's Changes

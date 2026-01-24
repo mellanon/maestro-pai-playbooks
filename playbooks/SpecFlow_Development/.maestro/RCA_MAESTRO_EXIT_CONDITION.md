@@ -3,7 +3,7 @@
 **Date:** 2026-01-24
 **Severity:** Medium
 **Status:** Open
-**Related Ticket:** N/A (local project - no Jira project available)
+**Related Ticket:** SMS-454
 
 ---
 
@@ -160,7 +160,7 @@ Users should:
 
 ## Action Items
 
-- [ ] File Maestro feature request for exit condition support (GitHub issue on ksylvan/Maestro)
+- [x] File Maestro feature request for exit condition support → [Issue #231](https://github.com/pedramamini/Maestro/issues/231)
 - [ ] Update playbook README to clarify current exit behavior
 - [ ] Consider adding "STOP HERE" visual indicators in 6_COMPLETE.md
 - [ ] Document recommended max loop settings per feature count

@@ -20,7 +20,7 @@ In a "border run" scenario with multiple parallel agents:
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
 │  1. DISCOVER_PRS                                                │
-│     └─ Find all open PRs targeting develop                      │
+│     └─ Find all open PRs targeting $TARGET_BRANCH               │
 │     └─ Load PR_MANIFEST.json from each agent's artifacts        │
 │     └─ Validate manifests are comparable (same features)        │
 │                                                                 │
@@ -55,7 +55,7 @@ In a "border run" scenario with multiple parallel agents:
 
 This playbook expects:
 
-1. **Multiple open PRs** targeting develop from feature branches
+1. **Multiple open PRs** targeting the target branch (auto-detected or configured)
 2. **PR_MANIFEST.json** files in each agent's working folder
 3. **Same feature scope** - PRs should implement the same SpecFlow features
 
@@ -99,7 +99,7 @@ Consider cherry-picking when:
 ## Usage
 
 1. Run SpecFlow PR Creator on all agent branches
-2. Ensure all PRs are open and targeting develop
+2. Ensure all PRs are open and targeting the same base branch
 3. Run this playbook from any agent session
 4. Review COMPARISON_REPORT.md for recommendation
 

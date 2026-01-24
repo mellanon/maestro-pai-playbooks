@@ -74,7 +74,7 @@ This PR implements [N] features from the SpecFlow queue:
 
 **Agent:** {{AGENT_NAME}}
 **Branch:** [branch-name]
-**Target:** develop
+**Target:** $TARGET_BRANCH
 
 ## Features Implemented
 
@@ -180,14 +180,14 @@ bun run install.ts --migrate
 #
 # Agent: {{AGENT_NAME}}
 # Branch: [branch-name]
-# Target: develop
+# Target: $TARGET_BRANCH
 # Generated: {{DATE}}
 #
 # BEFORE RUNNING:
 # 1. Review PR_DESCRIPTION.md
 # 2. Review CHANGELOG.md
 # 3. Verify branch is correct: git branch --show-current
-# 4. Verify target is correct: develop
+# 4. Verify target is correct: $TARGET_BRANCH
 #
 # ═══════════════════════════════════════════════════════════════
 
@@ -195,7 +195,7 @@ set -e
 
 AUTORUN_FOLDER="{{AUTORUN_FOLDER}}"
 BRANCH_NAME="$(git branch --show-current)"
-TARGET_BRANCH="develop"
+TARGET_BRANCH="$TARGET_BRANCH"
 PR_TITLE="feat: [F-1 through F-N] - [brief summary]"
 
 echo "Creating PR: $BRANCH_NAME → $TARGET_BRANCH"
@@ -267,7 +267,7 @@ Or manually:
 
 ```bash
 gh pr create \
-  --base develop \
+  --base $TARGET_BRANCH \
   --title "feat: [your title]" \
   --body-file "{{AUTORUN_FOLDER}}/PR_DESCRIPTION.md"
 ```
@@ -285,7 +285,7 @@ gh pr create \
 Before creating PR:
 - [ ] Reviewed PR_DESCRIPTION.md
 - [ ] Branch name is correct
-- [ ] Target branch (develop) is correct
+- [ ] Target branch ($TARGET_BRANCH) is correct
 - [ ] All tests pass locally
 - [ ] No secrets in committed files
 ```
@@ -306,7 +306,7 @@ PR PREPARATION COMPLETE - HUMAN ACTION REQUIRED
 ═══════════════════════════════════════════════════════════════
 Agent:        {{AGENT_NAME}}
 Branch:       [branch-name] (pushed)
-Target:       develop
+Target:       $TARGET_BRANCH
 
 Artifacts:
   PR_DESCRIPTION.md  ✓

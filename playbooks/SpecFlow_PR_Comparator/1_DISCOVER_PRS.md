@@ -10,15 +10,34 @@
 
 ## Purpose
 
-Discover all open pull requests targeting the develop branch, load their PR_MANIFEST.json files, and validate they are comparable (implementing the same features).
+Discover all open pull requests targeting the target branch (auto-detected or configured), load their PR_MANIFEST.json files, and validate they are comparable (implementing the same features).
+
+## Configuration
+
+**Target Branch:** Determined dynamically by detecting the main development branch:
+- First checks for `.maestro/TARGET_BRANCH` file (override)
+- Then checks if `develop` branch exists
+- Falls back to `main` if no `develop`
+
+```bash
+# Auto-detect or read override
+if [[ -f .maestro/TARGET_BRANCH ]]; then
+    TARGET_BRANCH=$(cat .maestro/TARGET_BRANCH)
+elif git rev-parse --verify develop >/dev/null 2>&1; then
+    TARGET_BRANCH="develop"
+else
+    TARGET_BRANCH="main"
+fi
+echo "Target branch: $TARGET_BRANCH"
+```
 
 ## Tasks
 
 ### Task 1: List Open PRs
 
-- [ ] **Find all open PRs targeting develop**:
+- [ ] **Find all open PRs targeting $TARGET_BRANCH**:
   ```bash
-  gh pr list --base develop --state open --json number,title,headRefName,author,url,additions,deletions,changedFiles
+  gh pr list --base $TARGET_BRANCH --state open --json number,title,headRefName,author,url,additions,deletions,changedFiles
   ```
 
 - [ ] **Record PR list** for processing
@@ -68,7 +87,7 @@ For each PR found:
 Generated: {{DATE}}
 Agent: {{AGENT_NAME}}
 
-## Open PRs Targeting Develop
+## Open PRs Targeting $TARGET_BRANCH
 
 | PR # | Title | Author | Branch | Manifest |
 |------|-------|--------|--------|----------|

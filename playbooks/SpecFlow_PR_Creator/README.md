@@ -2,14 +2,14 @@
 
 ## Purpose
 
-Creates pull requests from SpecFlow-completed feature branches with rich changelogs extracted from spec artifacts. Designed for multi-agent Maestro workflows where each agent completes a feature branch and creates a PR to a develop branch.
+Creates pull requests from SpecFlow-completed feature branches with rich changelogs extracted from spec artifacts. Designed for multi-agent Maestro workflows where each agent completes a feature branch and creates a PR to the target branch (auto-detected or configurable).
 
 ## Use Case
 
 In a "border run" scenario with multiple parallel agents:
 1. Each agent works on their own feature branch (e.g., `feature/signal-agent-1`)
 2. Each agent uses SpecFlow to implement features (F-1, F-2, etc.)
-3. **This playbook** creates a PR from their feature branch to develop
+3. **This playbook** creates a PR from their feature branch to target (auto-detected)
 4. A separate comparator agent reviews all PRs and cherry-picks the best
 
 ## Data Sources
@@ -32,7 +32,7 @@ This playbook extracts information from:
 │                                                                 │
 │  1. GATHER_CONTEXT                                              │
 │     └─ Extract completed features from SpecFlow                 │
-│     └─ Identify target branch (develop)                         │
+│     └─ Identify target branch (auto-detect or override)         │
 │     └─ Verify branch is ahead of target                         │
 │                                                                 │
 │  2. EXTRACT_CHANGELOG                                           │
@@ -41,7 +41,7 @@ This playbook extracts information from:
 │     └─ Build structured changelog                               │
 │                                                                 │
 │  3. COMPARE_BRANCHES                                            │
-│     └─ git diff develop...HEAD                                  │
+│     └─ git diff $TARGET_BRANCH...HEAD                           │
 │     └─ Categorize changes (features, tests, config)             │
 │     └─ Identify breaking changes                                │
 │                                                                 │
@@ -94,7 +94,7 @@ The `PR_MANIFEST.json` contains structured data for automated comparison:
   "branch": "feature/signal-agent-1",
   "prNumber": 123,
   "prUrl": "https://github.com/...",
-  "targetBranch": "develop",
+  "targetBranch": "develop",  // Auto-detected or from .maestro/TARGET_BRANCH
   "features": [
     {
       "id": "F-1",
@@ -125,14 +125,23 @@ The `PR_MANIFEST.json` contains structured data for automated comparison:
 - SpecFlow features are COMPLETE (not in_progress)
 - Feature branch exists and has commits ahead of target
 - `gh` CLI is authenticated
-- Target branch (develop) exists
+- Target branch exists (develop or main, auto-detected)
 
 ## Configuration
 
-Set target branch in document 1:
-```yaml
-targetBranch: develop  # or main, staging, etc.
+### Target Branch
+
+The target branch is determined dynamically:
+1. First checks for `.maestro/TARGET_BRANCH` file (override)
+2. Then checks if `develop` branch exists
+3. Falls back to `main` if no `develop`
+
+To override:
+```bash
+echo "my-custom-branch" > .maestro/TARGET_BRANCH
 ```
+
+The playbook uses `$TARGET_BRANCH` variable throughout all documents.
 
 ## Usage with Maestro
 

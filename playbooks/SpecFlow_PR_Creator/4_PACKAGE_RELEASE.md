@@ -24,7 +24,7 @@ Generate installation and upgrade documentation for this feature branch. This ad
 
 - [ ] **List new dependencies**:
   ```bash
-  git diff develop...HEAD -- package.json bun.lockb | grep -E '^\+.*"[^"]+":' || echo "No new dependencies"
+  git diff $TARGET_BRANCH...HEAD -- package.json bun.lockb | grep -E '^\+.*"[^"]+":' || echo "No new dependencies"
   ```
 
 - [ ] **List new files requiring setup**:

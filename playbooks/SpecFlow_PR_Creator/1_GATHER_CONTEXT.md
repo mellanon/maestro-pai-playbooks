@@ -14,8 +14,21 @@ Extract the current state of SpecFlow implementation, identify completed feature
 
 ## Configuration
 
-```yaml
-targetBranch: develop
+**Target Branch:** Determined dynamically by detecting the main $TARGET_BRANCHment branch:
+- First checks for `$TARGET_BRANCH` branch
+- Falls back to `main` if no `$TARGET_BRANCH` exists
+- Can be overridden by creating `.maestro/TARGET_BRANCH` containing the branch name
+
+```bash
+# Auto-detect or read override
+if [[ -f .maestro/TARGET_BRANCH ]]; then
+    TARGET_BRANCH=$(cat .maestro/TARGET_BRANCH)
+elif git rev-parse --verify $TARGET_BRANCH >/dev/null 2>&1; then
+    TARGET_BRANCH="$TARGET_BRANCH"
+else
+    TARGET_BRANCH="main"
+fi
+echo "Target branch: $TARGET_BRANCH"
 ```
 
 ## Tasks
@@ -65,7 +78,7 @@ targetBranch: develop
 
 - [ ] **Count commits ahead of target**:
   ```bash
-  git rev-list --count develop..HEAD
+  git rev-list --count $TARGET_BRANCH..HEAD
   ```
   If 0, STOP - nothing to PR.
 
@@ -89,7 +102,7 @@ targetBranch: develop
 
 ## Branch Information
 - **Current Branch**: [branch name]
-- **Target Branch**: develop
+- **Target Branch**: $TARGET_BRANCH
 - **Commits Ahead**: [count]
 - **Branch Pushed**: [yes/no]
 
@@ -119,7 +132,7 @@ targetBranch: develop
 
 - [ ] At least one feature is COMPLETE
 - [ ] All completed features have all 5 artifacts
-- [ ] Branch has commits ahead of develop
+- [ ] Branch has commits ahead of $TARGET_BRANCH
 - [ ] No critical uncommitted changes
 
 ## Warnings
