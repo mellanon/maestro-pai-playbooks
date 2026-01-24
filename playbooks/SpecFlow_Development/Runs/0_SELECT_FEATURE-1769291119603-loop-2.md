@@ -58,7 +58,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 2: Check Current Feature State
 
-- [ ] **Read feature state file** (if exists):
+- [x] **Read feature state file** (if exists): ✅ Loop 2: `.maestro/CURRENT_FEATURE.md` exists with F-017 (OTLP Hook Instrumentation), phase: tasks. Feature is IN PROGRESS - skipping to Task 5.
 
   Check if `.maestro/CURRENT_FEATURE.md` exists:
   ```bash
@@ -70,6 +70,8 @@ Select the next feature to implement and initialize it for the playbook workflow
   If it doesn't exist or is empty, proceed to Task 3 to select a new feature.
 
 ### Task 3: Get Next Feature (By ID Order)
+
+*SKIPPED - F-017 already in progress (see Task 2)*
 
 - [ ] **List all pending features and sort by ID**:
   ```bash
@@ -137,6 +139,8 @@ and validating duplicate claims against actual feature status.
 
 ### Task 4: Initialize Feature Context
 
+*SKIPPED - F-017 already in progress (see Task 2)*
+
 - [ ] **Check feature phase and initialize if needed**:
   ```bash
   specflow status <feature-id>
@@ -171,7 +175,12 @@ and validating duplicate claims against actual feature status.
 
 ### Task 5: Verify Feature Ready
 
-- [ ] **Confirm feature is ready for playbook**:
+- [x] **Confirm feature is ready for playbook**: ✅ Loop 2: F-017 verified via SQLite query
+  - **Feature ID:** F-017
+  - **Status:** pending (not complete)
+  - **Phase:** tasks
+  - **Routing:** Phase `tasks` → Start at Step 4 (IMPLEMENT)
+
   ```bash
   specflow status <feature-id>
   ```
