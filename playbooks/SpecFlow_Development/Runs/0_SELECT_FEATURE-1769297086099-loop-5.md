@@ -58,7 +58,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 2: Check Current Feature State
 
-- [ ] **Read feature state file** (if exists):
+- [x] **Read feature state file** (if exists): ✓ Found F-017 in progress at phase "tasks" - skipping to Task 5
 
   Check if `.maestro/CURRENT_FEATURE.md` exists:
   ```bash
@@ -171,7 +171,7 @@ and validating duplicate claims against actual feature status.
 
 ### Task 5: Verify Feature Ready
 
-- [ ] **Confirm feature is ready for playbook**:
+- [x] **Confirm feature is ready for playbook**: ✓ F-017 verified - phase=tasks, status=pending
   ```bash
   specflow status <feature-id>
   ```
@@ -181,8 +181,10 @@ and validating duplicate claims against actual feature status.
   Record current phase for routing:
   - Phase `none` or `specify` → Start at Step 1 (SPECIFY)
   - Phase `plan` → Start at Step 2 (PLAN)
-  - Phase `tasks` → Start at Step 3 (TASKS)
+  - **Phase `tasks` → Start at Step 3 (TASKS)** ← F-017 current routing
   - Phase `implement` → Start at Step 4 (IMPLEMENT)
+
+  **Loop 5 Results:** F-017 "OTLP Hook Instrumentation" is at tasks phase with 5/17 tasks complete (T-1.1 through T-1.5). Routing to Step 3 (TASKS) / Step 4 (IMPLEMENT) for continued implementation.
 
 ## Output
 
