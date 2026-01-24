@@ -3203,4 +3203,104 @@ victoriatraces:
 
 ---
 
+### F-018: Session Environment Tracking
+
+**Status:** Pending | **Priority:** Medium | **Dependencies:** F-1 (Event Schema)
+
+#### Overview
+
+Add PAI environment metadata to session.start events for cross-environment session correlation. This enables querying sessions across different PAI versions/branches when using `pai-switch`.
+
+#### Rationale
+
+Claude Code stores sessions per working directory path:
+```
+~/.claude/projects/-Users-andreas-Developer-pai-versions-worktrees-signal-agent-2/
+~/.claude/projects/-Users-andreas-Developer-pai-versions-worktrees-signal-agent-1/
+```
+
+When using `pai-switch` to swap PAI environments, sessions appear to "disappear" because they're directory-specific. Adding environment metadata enables:
+
+1. **Cross-environment queries** — Find sessions regardless of which PAI version was active
+2. **Version tracking** — Know which PAI version/branch was in use during a session
+3. **Session archaeology** — Locate old sessions after environment switches
+
+#### Deliverables
+
+**D1: Extended SessionStartData**
+
+Add environment fields to `SessionStartData` interface:
+
+```typescript
+interface SessionStartData {
+  // Existing fields
+  model: string;
+  working_dir: string;
+
+  // New fields (F-018)
+  pai_version?: string;     // Git branch name (e.g., "signal-agent-2", "main")
+  pai_dir?: string;         // Full PAI_DIR path
+  git_branch?: string;      // Current working directory's git branch
+  git_commit?: string;      // Current HEAD commit (short hash)
+}
+```
+
+**D2: Environment Detection Utility**
+
+Create `lib/events/environment.ts`:
+
+```typescript
+export interface EnvironmentInfo {
+  paiVersion: string;      // From git branch of PAI_DIR
+  paiDir: string;          // PAI_DIR env var or ~/.claude resolved
+  gitBranch: string;       // Branch of working_dir
+  gitCommit: string;       // Short commit hash
+}
+
+export function detectEnvironment(): EnvironmentInfo;
+```
+
+**D3: SessionStart Hook Enhancement**
+
+Update SessionStart hook to capture environment:
+
+```typescript
+import { detectEnvironment } from 'Observability/lib/events/environment';
+
+const env = detectEnvironment();
+const event = createSessionStartEvent('hook.SessionStart', sessionId, {
+  model: hookInput.model,
+  working_dir: process.cwd(),
+  pai_version: env.paiVersion,
+  pai_dir: env.paiDir,
+  git_branch: env.gitBranch,
+  git_commit: env.gitCommit
+});
+```
+
+#### Acceptance Criteria
+
+| ID | Criterion | Verification |
+|----|-----------|--------------|
+| AC-1 | session.start events include pai_version | grep JSONL for field |
+| AC-2 | session.start events include pai_dir | grep JSONL for field |
+| AC-3 | session.start events include git_branch | grep JSONL for field |
+| AC-4 | Works when PAI_DIR is symlink | Test with ~/.claude symlink |
+| AC-5 | Graceful fallback if git unavailable | No crash, null values |
+| AC-6 | Cross-env query works | jq filter finds sessions across versions |
+
+#### Testing Strategy
+
+1. **Unit tests:** Environment detection with mocked git/env
+2. **Integration tests:** Full session.start with real git repo
+3. **Acceptance tests:** pai-switch, create session, verify metadata
+
+#### Out of Scope
+
+- Cross-environment session merging (viewing sessions from other directories)
+- Modifying Claude Code's session storage behavior
+- Automatic session migration on pai-switch
+
+---
+
 *PAI Observability Requirements - Simplified, file-based, PAI-first design. January 2026.*
