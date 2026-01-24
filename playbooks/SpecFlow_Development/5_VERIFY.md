@@ -12,6 +12,40 @@
 
 Verify implementation progress and determine whether to continue looping or proceed to completion.
 
+## Phase Guard (MUST RUN FIRST)
+
+Before doing any work, verify this step should run:
+
+- [ ] **Check if this step should execute**:
+  ```bash
+  # Read current feature ID
+  FEATURE_ID=$(grep "Feature ID:" .maestro/CURRENT_FEATURE.md 2>/dev/null | awk -F: '{print $2}' | tr -d ' ')
+
+  # Check if ALL_FEATURES_COMPLETE
+  if grep -q "ALL_FEATURES_COMPLETE" .maestro/CURRENT_FEATURE.md 2>/dev/null; then
+    echo "PHASE_GUARD: SKIP - All features complete"
+    exit 0
+  fi
+
+  # Check feature exists
+  if [[ -z "$FEATURE_ID" ]]; then
+    echo "PHASE_GUARD: SKIP - No current feature"
+    exit 0
+  fi
+
+  # Step 5 runs when there's an active feature (any phase)
+  PHASE=$(specflow status "$FEATURE_ID" --json 2>/dev/null | jq -r '.phase' 2>/dev/null || echo "unknown")
+
+  if [[ "$PHASE" == "complete" ]]; then
+    echo "PHASE_GUARD: SKIP - Feature already complete"
+    exit 0
+  fi
+
+  echo "PHASE_GUARD: PROCEED - Verifying $FEATURE_ID (phase: $PHASE)"
+  ```
+
+If the phase guard exits with "SKIP", this document is a NO-OP. Proceed to next document.
+
 ## Instructions
 
 ### 1. Run Test Suite

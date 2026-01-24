@@ -17,6 +17,40 @@ Break the feature into reviewable implementation units with dependencies.
 - Technical plan approved (plan.md exists and human approved)
 - Feature phase is "plan"
 
+## Phase Guard (MUST RUN FIRST)
+
+Before doing any work, verify this step should run:
+
+- [ ] **Check if this step should execute**:
+  ```bash
+  # Read current feature ID
+  FEATURE_ID=$(grep "Feature ID:" .maestro/CURRENT_FEATURE.md 2>/dev/null | awk -F: '{print $2}' | tr -d ' ')
+
+  # Check if ALL_FEATURES_COMPLETE
+  if grep -q "ALL_FEATURES_COMPLETE" .maestro/CURRENT_FEATURE.md 2>/dev/null; then
+    echo "PHASE_GUARD: SKIP - All features complete"
+    exit 0
+  fi
+
+  # Check feature exists
+  if [[ -z "$FEATURE_ID" ]]; then
+    echo "PHASE_GUARD: SKIP - No current feature"
+    exit 0
+  fi
+
+  # Step 3 only runs when phase is "plan"
+  PHASE=$(specflow status "$FEATURE_ID" --json 2>/dev/null | jq -r '.phase' 2>/dev/null || echo "none")
+
+  if [[ "$PHASE" != "plan" ]]; then
+    echo "PHASE_GUARD: SKIP - Feature not at plan phase (current: $PHASE)"
+    exit 0
+  fi
+
+  echo "PHASE_GUARD: PROCEED - $FEATURE_ID ready for task breakdown (phase: $PHASE)"
+  ```
+
+If the phase guard exits with "SKIP", this document is a NO-OP. Proceed to next document.
+
 ## Instructions
 
 ### 1. Check Current Status

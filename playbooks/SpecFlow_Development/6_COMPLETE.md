@@ -18,6 +18,48 @@ Validate all phases complete and mark the feature as done.
 - All tasks complete
 - Step 5 loop control indicates completion
 
+## Phase Guard (MUST RUN FIRST) - CRITICAL
+
+**This step MUST NOT run until all tasks are complete.** Before doing any work:
+
+- [ ] **Check if this step should execute**:
+  ```bash
+  # Read current feature ID
+  FEATURE_ID=$(grep "Feature ID:" .maestro/CURRENT_FEATURE.md 2>/dev/null | awk -F: '{print $2}' | tr -d ' ')
+
+  # Check if ALL_FEATURES_COMPLETE (playbook done)
+  if grep -q "ALL_FEATURES_COMPLETE" .maestro/CURRENT_FEATURE.md 2>/dev/null; then
+    echo "PHASE_GUARD: SKIP - All features already complete, playbook done"
+    exit 0
+  fi
+
+  # Check feature exists
+  if [[ -z "$FEATURE_ID" ]]; then
+    echo "PHASE_GUARD: SKIP - No current feature"
+    exit 0
+  fi
+
+  # CRITICAL: Check ALL tasks are complete before allowing Step 6 to run
+  INCOMPLETE_COUNT=$(specflow status "$FEATURE_ID" --json 2>/dev/null | jq -r '[.tasks[] | select(.status != "complete")] | length' 2>/dev/null || echo "999")
+  TOTAL_TASKS=$(specflow status "$FEATURE_ID" --json 2>/dev/null | jq -r '.tasks | length' 2>/dev/null || echo "0")
+
+  if [[ "$INCOMPLETE_COUNT" -gt 0 ]]; then
+    echo "PHASE_GUARD: SKIP - $INCOMPLETE_COUNT of $TOTAL_TASKS tasks incomplete"
+    echo "PHASE_GUARD: Feature not ready for completion. Return to Step 4 (IMPLEMENT)."
+    exit 0
+  fi
+
+  # Check tests pass
+  if ! bun test 2>&1 | grep -qE "(pass|PASS|✓)" ; then
+    echo "PHASE_GUARD: SKIP - Tests not passing"
+    exit 0
+  fi
+
+  echo "PHASE_GUARD: PROCEED - All $TOTAL_TASKS tasks complete, tests passing"
+  ```
+
+**If the phase guard exits with "SKIP", this document is a NO-OP.** The playbook should loop back to Step 4 to continue implementation.
+
 ## Instructions
 
 ### 1. Final Validation
