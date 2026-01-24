@@ -44,7 +44,7 @@ Before doing any work, verify this step should run:
   echo "PHASE_GUARD: PROCEED - Verifying $FEATURE_ID (phase: $PHASE)"
   ```
 
-If the phase guard exits with "SKIP", this document is a NO-OP. Proceed to next document.
+**If phase guard returns SKIP:** Mark ALL remaining tasks below as `[x] SKIPPED - Phase guard` and proceed to next document. This prevents stall detection from flagging unchecked boxes.
 
 ## Instructions
 

@@ -58,7 +58,7 @@ Validate all phases complete and mark the feature as done.
   echo "PHASE_GUARD: PROCEED - All $TOTAL_TASKS tasks complete, tests passing"
   ```
 
-**If the phase guard exits with "SKIP", this document is a NO-OP.** The playbook should loop back to Step 4 to continue implementation.
+**If phase guard returns SKIP:** Mark ALL remaining tasks below as `[x] SKIPPED - Phase guard` and proceed to next document. This prevents stall detection from flagging unchecked boxes.
 
 ## Instructions
 
