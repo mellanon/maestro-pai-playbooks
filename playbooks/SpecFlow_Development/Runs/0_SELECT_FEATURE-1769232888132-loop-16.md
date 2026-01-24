@@ -26,9 +26,11 @@ Select the next feature to implement and initialize it for the playbook workflow
   mkdir -p .maestro/outputs/COMPLETED_FEATURES
   ```
 
+  ✅ **Loop 16 Verification**: State directory already exists from previous loops.
+
 ### Task 1: Initialize SpecFlow (Fresh Start Only)
 
-- [x] **Check if SpecFlow is initialized**: (Already initialized - `.specflow/` exists)
+- [x] **Check if SpecFlow is initialized**:
   ```bash
   ls -la .specflow/ 2>/dev/null || ls -la .specify/ 2>/dev/null || echo "NOT_INITIALIZED"
   ```
@@ -56,11 +58,11 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   **If already initialized:** Skip to Task 2.
 
+  ✅ **Loop 16 Verification**: SpecFlow already initialized. `.specflow/` directory exists with `features.db`.
+
 ### Task 2: Check Current Feature State
 
 - [x] **Read feature state file** (if exists):
-
-**Result:** `.maestro/CURRENT_FEATURE.md` contains `ALL_FEATURES_COMPLETE`. All 16 features have been implemented (15 completed, 1 skipped). No further work needed.
 
   Check if `.maestro/CURRENT_FEATURE.md` exists:
   ```bash
@@ -71,12 +73,11 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   If it doesn't exist or is empty, proceed to Task 3 to select a new feature.
 
+  ✅ **Loop 16 Verification**: `.maestro/CURRENT_FEATURE.md` exists and shows `ALL_FEATURES_COMPLETE`.
+
 ### Task 3: Get Next Feature (By ID Order)
 
 - [x] **List all pending features and sort by ID**:
-
-  **Result:** No pending features found. `specflow status --json` returned empty results for pending features.
-
   ```bash
   # Get JSON output and sort by feature ID number
   specflow status --json | jq -r '.features[] | select(.status == "pending") | .id' | sort -t'-' -k2 -n | head -1
@@ -89,20 +90,64 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   This returns features in F-1, F-2, F-3... order (NOT by priority).
 
-- [x] **Select the FIRST feature from the sorted list**:
+  ✅ **Loop 16 Verification**: No pending features remain. All 16 features are complete.
 
-  **Result:** No pending features exist. `.maestro/CURRENT_FEATURE.md` already contains `ALL_FEATURES_COMPLETE`. Playbook should exit.
+- [x] **Select the FIRST feature from the sorted list**:
 
   Record the feature ID (e.g., `F-2`) for the next task.
 
   **If no pending features exist:** Write "ALL_FEATURES_COMPLETE" to `.maestro/CURRENT_FEATURE.md` and exit playbook.
 
+  ✅ **Loop 16 Result**: ALL_FEATURES_COMPLETE confirmed. `.maestro/CURRENT_FEATURE.md` already contains completion status from Loop 12. SpecFlow status shows 16/16 features complete (100%). **Playbook complete - no more work required.**
+
+---
+
+## ⚠️ SKIP VALIDATION GATE (SMS-452)
+
+**CRITICAL: Agents MUST NOT skip features without explicit validation.**
+
+If during ANY phase you determine a feature should be skipped:
+
+1. **STOP** - Do not mark as skipped without validation
+2. **Use the validated skip command**:
+   ```bash
+   specflow skip <feature-id> \
+     --reason <duplicate|deferred|blocked|out_of_scope|superseded> \
+     --justification "Detailed explanation of why" \
+     --duplicate-of <other-feature-id>  # Required if reason=duplicate
+   ```
+
+3. **Validation rules for duplicate claims**:
+   - The `--duplicate-of` feature MUST exist
+   - The `--duplicate-of` feature MUST be complete or in_progress
+   - If validation fails, you CANNOT skip as duplicate
+
+4. **Example (valid skip)**:
+   ```bash
+   specflow skip F-12 --reason deferred \
+     --justification "Deferring to v2.0 milestone per stakeholder decision"
+   ```
+
+5. **Example (duplicate - will be validated)**:
+   ```bash
+   specflow skip F-12 --reason duplicate --duplicate-of F-11 \
+     --justification "F-11 already implements the same configuration"
+   ```
+   This will FAIL if F-11 doesn't actually cover F-12's deliverables.
+
+**Background:** RCA SMS-452 identified that F-12 (Vector Configuration) was incorrectly
+skipped as "duplicate of F-11" (Vector Collector Service). These were distinct features:
+- F-11 creates docker-compose.yml service entry
+- F-12 creates vector.toml configuration file
+
+The skip validation gate prevents similar errors by requiring explicit justification
+and validating duplicate claims against actual feature status.
+
+---
+
 ### Task 4: Initialize Feature Context
 
-- [x] **Check feature phase and initialize if needed**:
-
-  **Result:** SKIPPED - No pending features to initialize. ALL_FEATURES_COMPLETE.
-
+- [x] **Check feature phase and initialize if needed** (N/A - ALL_FEATURES_COMPLETE):
   ```bash
   specflow status <feature-id>
   ```
@@ -118,9 +163,7 @@ Select the next feature to implement and initialize it for the playbook workflow
   | `implement` | Feature in progress, proceed to Step 4 |
   | `complete` | Feature done, return to Task 3 for next |
 
-- [x] **Write current feature to state file**:
-
-  **Result:** SKIPPED - `.maestro/CURRENT_FEATURE.md` already contains `ALL_FEATURES_COMPLETE` status from previous loop.
+- [x] **Write current feature to state file** (N/A - completion status already written):
 
   Create/update `.maestro/CURRENT_FEATURE.md`:
   ```markdown
@@ -138,10 +181,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 5: Verify Feature Ready
 
-- [x] **Confirm feature is ready for playbook**:
-
-  **Result:** PLAYBOOK COMPLETE - All 16 features have been processed (15 completed, 1 skipped). No further work required.
-
+- [x] **Confirm feature is ready for playbook** (N/A - ALL_FEATURES_COMPLETE):
   ```bash
   specflow status <feature-id>
   ```

@@ -1,0 +1,282 @@
+# Document 4: Package Release
+
+## Context
+
+- **Playbook**: SpecFlow PR Creator
+- **Agent**: {{AGENT_NAME}}
+- **Project**: {{AGENT_PATH}}
+- **Date**: {{DATE}}
+- **Working Folder**: {{AUTORUN_FOLDER}}
+
+## Purpose
+
+Generate installation and upgrade documentation for this feature branch. This addresses the "how do you install it?" challenge by documenting the deployment path from source code to running system.
+
+## Prerequisites
+
+- `{{AUTORUN_FOLDER}}/SPECFLOW_CONTEXT.md` exists
+- `{{AUTORUN_FOLDER}}/CHANGELOG.md` exists
+- `{{AUTORUN_FOLDER}}/BRANCH_COMPARISON.md` exists
+
+## Tasks
+
+### Task 1: Identify Installation Components
+
+- [ ] **List new dependencies**:
+  ```bash
+  git diff develop...HEAD -- package.json bun.lockb | grep -E '^\+.*"[^"]+":' || echo "No new dependencies"
+  ```
+
+- [ ] **List new files requiring setup**:
+  - New CLI tools in `/bin/`
+  - New hooks in `/hooks/`
+  - New skills in `/skills/`
+  - New configuration files
+
+- [ ] **Check for new environment variables**:
+  Search for `process.env.` or `Bun.env.` in changed files.
+
+### Task 2: Determine Installation Method
+
+- [ ] **Check project type**:
+
+  For PAI projects, installation is via:
+  1. Git clone/pull
+  2. `bun run install.ts` (with --migrate for upgrades)
+
+  For other projects, identify the standard installation method.
+
+- [ ] **Document pre-requisites**:
+  - Runtime versions (Node, Bun, Python)
+  - System dependencies
+  - Required API keys or credentials
+
+### Task 3: Create Installation Guide
+
+- [ ] **Write INSTALLATION_GUIDE.md**: Create `{{AUTORUN_FOLDER}}/INSTALLATION_GUIDE.md`:
+
+```markdown
+# Installation Guide: {{AGENT_NAME}} Feature Branch
+
+Generated: {{DATE}}
+Branch: [branch name]
+Features: [list of F-N IDs]
+
+---
+
+## Quick Install (New Users)
+
+```bash
+# Clone the repository
+git clone -b [branch-name] [repo-url]
+cd [repo-name]
+
+# Install dependencies
+bun install
+
+# Run installation wizard
+bun run install.ts
+```
+
+## Upgrade (Existing Users)
+
+### Option A: Merge-based upgrade
+
+```bash
+# Fetch the feature branch
+git fetch origin [branch-name]
+
+# Merge into your current branch
+git merge origin/[branch-name]
+
+# Reinstall dependencies
+bun install
+
+# Run migration
+bun run install.ts --migrate
+```
+
+### Option B: Fresh install with migration
+
+```bash
+# Backup current installation
+mv ~/.claude ~/.claude-backup
+
+# Clone the feature branch
+git clone -b [branch-name] [repo-url] ~/.claude
+
+# Run installation with migration
+cd ~/.claude
+bun run install.ts --migrate
+```
+
+The migration wizard will automatically:
+- Detect your backup at `~/.claude-backup`
+- Import your settings.json (identity, preferences)
+- Import your USER/ customizations
+- Import your personal skills (_ALLCAPS)
+- Import your agent configurations
+- Preserve your MEMORY/ state
+
+---
+
+## New Dependencies
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| [package] | [version] | [why needed] |
+
+**Or:** No new dependencies added.
+
+---
+
+## New Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| [VAR_NAME] | Yes/No | [default] | [description] |
+
+**Or:** No new environment variables required.
+
+---
+
+## New Components
+
+### New Skills
+
+| Skill | Location | Description |
+|-------|----------|-------------|
+| [name] | `skills/[Name]/` | [what it does] |
+
+**Or:** No new skills added.
+
+### New Hooks
+
+| Hook | Event | Description |
+|------|-------|-------------|
+| [name] | [PreToolUse/etc] | [what it does] |
+
+**Or:** No new hooks added.
+
+### New CLI Tools
+
+| Tool | Location | Usage |
+|------|----------|-------|
+| [name] | `bin/[name]/` | `bun run [name]` |
+
+**Or:** No new CLI tools added.
+
+---
+
+## Configuration Changes
+
+### settings.json
+
+New configuration options added:
+
+```json
+{
+  "newSection": {
+    "option1": "default value",
+    "option2": true
+  }
+}
+```
+
+**Or:** No configuration changes required.
+
+---
+
+## Post-Installation Verification
+
+After installation, verify the new features are working:
+
+```bash
+# Check SpecFlow features are recognized
+specflow status
+
+# Run tests
+bun test
+
+# Verify new modules import correctly
+bun -e "import * as events from './Observability/lib/events'; console.log(Object.keys(events).length, 'exports')"
+```
+
+### Expected Output
+
+- SpecFlow shows [N] features (F-1 through F-N)
+- All tests pass
+- New modules export correctly
+
+---
+
+## Rollback Procedure
+
+If issues occur, rollback to previous version:
+
+```bash
+# If using Option A (merge)
+git revert HEAD
+
+# If using Option B (fresh install)
+rm -rf ~/.claude
+mv ~/.claude-backup ~/.claude
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**Issue:** [Description]
+**Solution:** [How to fix]
+
+**Issue:** Tests fail after upgrade
+**Solution:** Clear Bun cache and reinstall:
+```bash
+rm -rf node_modules bun.lockb
+bun install
+bun test
+```
+
+---
+
+## Support
+
+- **Agent**: {{AGENT_NAME}}
+- **Branch**: [branch-name]
+- **PR**: [will be filled in Document 5]
+
+---
+
+*Generated by SpecFlow PR Creator Playbook*
+```
+
+### Task 4: Create Upgrade Path Summary
+
+- [ ] **Document breaking changes migration**:
+
+  For each breaking change in BRANCH_COMPARISON.md, document:
+  - What changed
+  - What users need to do
+  - Example before/after
+
+### Task 5: Verify Installation Instructions
+
+- [ ] **Sanity check commands**:
+  - All paths are correct
+  - All referenced files exist
+  - No placeholders remain
+
+## Success Criteria
+
+- INSTALLATION_GUIDE.md created
+- All new dependencies documented
+- All new environment variables documented
+- Upgrade path documented
+- Rollback procedure included
+
+## Status
+
+Mark complete when installation guide is ready.
