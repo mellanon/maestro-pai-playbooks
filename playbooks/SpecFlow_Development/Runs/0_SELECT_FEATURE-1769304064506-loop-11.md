@@ -28,7 +28,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 1: Initialize SpecFlow (Fresh Start Only)
 
-- [ ] **Check if SpecFlow is initialized**:
+- [x] **Check if SpecFlow is initialized**: ✓ SpecFlow already initialized (`.specflow/` exists with features.db)
   ```bash
   ls -la .specflow/ 2>/dev/null || ls -la .specify/ 2>/dev/null || echo "NOT_INITIALIZED"
   ```
@@ -58,7 +58,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 2: Check Current Feature State
 
-- [ ] **Read feature state file** (if exists):
+- [x] **Read feature state file** (if exists): ✓ F-017 is IN PROGRESS at `tasks` phase. Skipping to Task 5.
 
   Check if `.maestro/CURRENT_FEATURE.md` exists:
   ```bash
@@ -171,7 +171,7 @@ and validating duplicate claims against actual feature status.
 
 ### Task 5: Verify Feature Ready
 
-- [ ] **Confirm feature is ready for playbook**:
+- [x] **Confirm feature is ready for playbook**: ✓ F-017 verified at phase `tasks` (not complete). **Routing: → Proceed to 3_TASKS.md (skip Steps 1-2)**
   ```bash
   specflow status <feature-id>
   ```
