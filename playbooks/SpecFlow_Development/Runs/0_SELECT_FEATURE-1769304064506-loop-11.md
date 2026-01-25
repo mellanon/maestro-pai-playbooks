@@ -71,7 +71,8 @@ Select the next feature to implement and initialize it for the playbook workflow
 
 ### Task 3: Get Next Feature (By ID Order)
 
-- [ ] **List all pending features and sort by ID**:
+- [x] **SKIPPED** - F-017 already in progress (per Task 2). No new feature selection needed.
+- [x] **List all pending features and sort by ID**: ✓ SKIPPED (existing feature F-017 in progress)
   ```bash
   # Get JSON output and sort by feature ID number
   specflow status --json | jq -r '.features[] | select(.status == "pending") | .id' | sort -t'-' -k2 -n | head -1
@@ -84,7 +85,7 @@ Select the next feature to implement and initialize it for the playbook workflow
 
   This returns features in F-1, F-2, F-3... order (NOT by priority).
 
-- [ ] **Select the FIRST feature from the sorted list**:
+- [x] **Select the FIRST feature from the sorted list**: ✓ SKIPPED (existing feature F-017 in progress)
 
   Record the feature ID (e.g., `F-2`) for the next task.
 
@@ -137,7 +138,7 @@ and validating duplicate claims against actual feature status.
 
 ### Task 4: Initialize Feature Context
 
-- [ ] **Check feature phase and initialize if needed**:
+- [x] **Check feature phase and initialize if needed**: ✓ SKIPPED (F-017 already initialized at `tasks` phase)
   ```bash
   specflow status <feature-id>
   ```
@@ -153,7 +154,7 @@ and validating duplicate claims against actual feature status.
   | `implement` | Feature in progress, proceed to Step 4 |
   | `complete` | Feature done, return to Task 3 for next |
 
-- [ ] **Write current feature to state file**:
+- [x] **Write current feature to state file**: ✓ SKIPPED (`.maestro/CURRENT_FEATURE.md` already exists with F-017)
 
   Create/update `.maestro/CURRENT_FEATURE.md`:
   ```markdown
